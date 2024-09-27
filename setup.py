@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='xIndices',
-    version='0.1',
+    version='0.2',
     description='A module for computing SST trends and variability',
     author='Jivesh Dixit',
     author_email='jiveshdixit@cas.iitd.ac.in',

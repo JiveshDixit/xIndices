@@ -1,8 +1,8 @@
 import xarray as xr
-from SST_indices import compute_sst_trend_enso, compute_pdo
+from xIndices.indices import compute_sst_trend_enso, compute_pdo
 
 # Load SST data
-sst = xr.open_dataset('./..Indices/sst.mnmean.nc')['sst']
+sst = xr.open_dataset('./sst.mnmean.nc')['sst']
 
 # Define climatology period
 clim_start = 1981
