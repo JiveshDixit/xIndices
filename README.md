@@ -1,12 +1,39 @@
-# xIndices
-xIndices: SST trends and variability using xarray
+**xIndices: A xarray based module for computing SST trends, SST variability modes and other atmospheric variability modes**
 
-https://pypi.org/project/xIndices/
+[![PyPi Shield](https://img.shields.io/pypi/v/xIndices)](https://pypi.org/project/xIndices/)
 
-This package is based on xarray to analyse various climate variability modes; patterns and indices. This can be installed using pip to an existing xarray, xesmf environment or a new envioronment with xesmf installed using conda (to include esmpy in the installation).
+[![Downloads](https://img.shields.io/pepy/dt/xIndices)](https://img.shields.io/pepy/dt/xIndices)
 
-Install this package using,
+# Overview
 
+**xIndices** is a xarray based Python library for calculating climate variability indices and patterns.
+For now, from preprocessing the data to final calculation of indices and patterns, it allows user to directly
+calculate without diving into the steps for calculations.
+**Key Features:**
+
+* **Load, pre-process and Regrid** Multiple data preprocessing tools are already supported including 
+using ESMF defined methods. 
+
+* **Rotated EOF analysis** This also allows user to examine EOF modes (Rotated: Varimax and Promax & Unrotated) 
+in user defined regions. Returns the desired number of modes (PCs and EOFs along with their variance explained 
+in the data). This comes in handy when one wants to play around EOF patterns in user selected regions and variables.  
+
+* **Various Climate variability modes and warming trend** Right now, we support SST Warming mode, ENSO mode using 
+global SST (One can calculate other modes using generaic EOF tool of this package), PDO, AMO, NAO etc. We intend to
+add more variability modes.
+
+
+# Install
+
+Install the xIndices library using pip or conda.
+
+```bash
 pip install xIndices
+```
 
-SST warming trend and ENSO are calculated in this package as first and second mode of global sst variability. PDO, AMO and NAO modes can also be calculated using this. We are commited to add more important climate variability modes as the competency of this package. It can preprocess the data including regridding, rearranging the dimesnions, renaming the dimensions of the xarray.DataArray or xarray.Dataset. We can also visualize the timeseries in this package. We shall be including the capability to visualize the patterns of the variability within the package itself.
+# Community & Support
+
+For now we have a Slack community page for comments, suggestions and error reporting. 
+
+[![Community](https://xindices.slack.com)](https://xindices.slack.com)
+
