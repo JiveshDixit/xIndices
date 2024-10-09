@@ -28,6 +28,11 @@ add more variability modes.
 Install the xIndices library using pip or conda.
 
 ```bash
+conda install -c jiveshdixit -c conda-forge xindices
+```
+**Note:** If you wish to install using **pip**
+```bash
+conda install -c conda-forge xesmf 
 pip install xIndices
 ```
 
