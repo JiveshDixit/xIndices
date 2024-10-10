@@ -4,6 +4,7 @@
 
 [![Downloads](https://img.shields.io/pepy/dt/xIndices)](https://img.shields.io/pepy/dt/xIndices)
 
+[![Documentation Status](https://readthedocs.org/projects/xindices/badge/?version=latest)](https://xindices.readthedocs.io/en/latest/?badge=latest)
 # Overview
 
 **xIndices** is a xarray based Python library for calculating climate variability indices and patterns.
