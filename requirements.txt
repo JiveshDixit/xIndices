@@ -1,11 +1,3 @@
-echo "sphinx==7.2.6
+sphinx==7.2.6
 sphinx_rtd_theme
-numpydoc
-xarray
-numpy>=1.26, <2.0
-dask
-xesmf
-matplotlib
-cartopy
-xeofs >2.2.3
-" > requirements.txt
+nbconvert[webpdf]
