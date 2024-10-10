@@ -25,14 +25,18 @@ add more variability modes.
 
 # Install
 
-Install the xIndices library using pip or conda.
+
+Install the xIndices library using pip or conda (recommended).
 
 ```bash
+conda create -n x_indices python=3.11 (OPTIONAL)
+conda activate x_indices (If creating the x_indices environment)
 conda install -c jiveshdixit -c conda-forge xindices
 ```
-**Note:** If you wish to install using **pip**
+
 ```bash
-conda install -c conda-forge xesmf 
+conda create -n x_indices -c conda-forge python=3.11 xesmf (MANDATORY)
+conda activate x_indices
 pip install xIndices
 ```
 
@@ -41,4 +45,3 @@ pip install xIndices
 For now we have a Slack community page for comments, suggestions and error reporting. 
 
 [![Community](https://xindices.slack.com)](https://xindices.slack.com)
-

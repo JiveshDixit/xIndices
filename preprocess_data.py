@@ -17,23 +17,24 @@ def rename_dims_to_standard(ds):
 
     # Step 1: Detect longitude
     if 'lon' not in ds.dims:
-        for possible_lon in ['longitude', 'x', 'lon', 'LONGITUDE', 'Longitude']:
-            if possible_lon in ds.dims or possible_lon in ds.coords:
-                rename_dict[possible_lon] = 'lon'
+        for coord in ds.coords:
+            if 'degrees_east' in ds.coords[coord].attrs.get('units', ''):
+                rename_dict[coord] = 'lon'
                 break
 
     # Step 2: Detect latitude
     if 'lat' not in ds.dims:
-        for possible_lat in ['latitude', 'y', 'lat', 'LATITUDE', 'Latitude']:
-            if possible_lat in ds.dims or possible_lat in ds.coords:
-                rename_dict[possible_lat] = 'lat'
+        for coord in ds.coords:
+            if 'degrees_north' in ds.coords[coord].attrs.get('units', ''):
+                rename_dict[coord] = 'lat'
                 break
 
     # Step 3: Detect time
     if 'time' not in ds.dims:
-        for possible_time in ['time', 't', 'TIME', 'Time']:
-            if possible_time in ds.dims or possible_time in ds.coords:
-                rename_dict[possible_time] = 'time'
+        for coord in ds.coords:
+            if 'days since' in ds.coords[coord].attrs.get('units', '') or 'seconds since' in ds.coords[coord].attrs.get('units', '') \
+            or 'months since' in ds.coords[coord].attrs.get('units', ''):
+                rename_dict[coord] = 'time'
                 break
 
     # Step 4: Rename the detected dimensions
@@ -41,6 +42,7 @@ def rename_dims_to_standard(ds):
         ds = ds.rename(rename_dict)
     
     return ds
+
 
 
 
@@ -148,7 +150,7 @@ def load_data(path, var=None, start_time=None, end_time=None, lat_s=None, lat_e=
     """
     
 
-    ds = xr.open_dataset(path)
+    ds = rename_dims_to_standard(xr.open_dataset(path))
     
 
     if var:
@@ -197,8 +199,7 @@ def regridding(ds, ds_out=None, var=None, method=None, to_range=None, x_s=None, 
         
     ds_out : xarray.Dataset or xarray.DataArray
         The target dataset or dataarray containing the target grid.
-        if ds_out==None, regridding will be done using a generic grid made using xe, xs, ye, ys, xi and yi
-
+        if ds_out is None, regridding will be done using a generic grid made using xe, xs, ye, ys, xi, and yi.
         
     var :
         The name of the variable to be regridded. If None, it is assumed that `ds` and `ds_out` are DataArrays.
@@ -215,45 +216,40 @@ def regridding(ds, ds_out=None, var=None, method=None, to_range=None, x_s=None, 
 
     x_s: start longitude
     x_e: end longitude'
-    x_i: lon incriment
+    x_i: lon increment
 
     y_s: start latitude
     y_e: end latitude'
-    y_i: lat incriment
+    y_i: lat increment
 
-    To perform regridding from Curvilinear data to rectilinear data we suggest to provide 
-    Curvilinear as ds and rectilinear as ds_out
+    To perform regridding from Curvilinear data to rectilinear data we suggest providing 
+    Curvilinear as ds and rectilinear as ds_out.
     '''
-    if ds_out==None:
-
-        
-
-        if x_s==None and x_e==None and y_s==None and y_e==None:
-            x_s=0
-            x_e=360
-            y_s=90
-            y_e=-90
-        if x_i==None:
-            x_i=1
-        if y_i==None:
-            y_i=-1
+    if ds_out is None:
+        if x_s is None and x_e is None and y_s is None and y_e is None:
+            x_s = 0
+            x_e = 360
+            y_s = 90
+            y_e = -90
+        if x_i is None:
+            x_i = 1
+        if y_i is None:
+            y_i = -1
 
         if isinstance(ds, xr.Dataset):
             ds_out = xr.Dataset(
-            {
-                "lat": (["lat"], np.arange(y_s, y_e+y_i, y_i)),
-                "lon": (["lon"], np.arange(x_s, x_e+x_i, x_i)),
-            }
+                {
+                    "lat": (["lat"], np.arange(y_s, y_e + y_i, y_i)),
+                    "lon": (["lon"], np.arange(x_s, x_e + x_i, x_i)),
+                }
             )
-
         elif isinstance(ds, xr.DataArray):
             ds_out = xr.DataArray(
-            coords=[np.arange(y_s, y_e+y_i, y_i), np.arange(x_s, x_e+x_i, x_i)],
-            dims=["lat", "lon"],
+                coords=[np.arange(y_s, y_e + y_i, y_i), np.arange(x_s, x_e + x_i, x_i)],
+                dims=["lat", "lon"],
             )
-
         else:
-            raise TypeError("Both ds should be either xarray.DataArray or xarray.Dataset.")
+            raise TypeError("ds should be either xarray.DataArray or xarray.Dataset.")
 
     if to_range is None:
         to_range = '0_360'
@@ -262,21 +258,14 @@ def regridding(ds, ds_out=None, var=None, method=None, to_range=None, x_s=None, 
     
     regridder = xe.Regridder(ds, ds_out, method=method)
 
-
     if isinstance(ds, xr.DataArray) and isinstance(ds_out, xr.DataArray):
-
         regridded = regridder(ds)
     elif isinstance(ds, xr.Dataset) and isinstance(ds_out, xr.Dataset):
-
-        # if var is None:
-        #     raise ValueError("Please specify 'var' when regridding a Dataset.")
-        regridded = regridder(ds)#[var])
+        regridded = regridder(ds)
     else:
         raise TypeError("Both ds and ds_out should be either xarray.DataArray or xarray.Dataset.")
     
-
     return adjust_longitude(rename_dims_to_standard(regridded), to_range=to_range, lon_name='lon')
-
 
 
 

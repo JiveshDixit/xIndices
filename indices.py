@@ -1,7 +1,7 @@
 # eof_calculations.py
 
 import numpy as np
-from .utils import calculate_anomaly, compute_weights, compute_eofs, compute_rotated_eofs
+from .utils import calculate_anomaly, compute_weights, compute_rotated_eofs
 import xarray as xr
 from .preprocess_data import load_data, rename_dims_to_standard, adjust_longitude
 
@@ -12,370 +12,456 @@ def calculate_global_mean_sst(data, lat_name='lat', lon_name='lon'):
 
 
 
-def global_sst_trend_and_enso(data=None, path=None, var=None ,clim_start=None, clim_end=None, desired=None, start_time=None, end_time=None, to_range=None, standardize=None, normalize_pattern=None, normalize_index=None):
-    '''This function calculates global sst warming trend, global sst warming pattern
-        ENSO index, ENSO pattern and their corrosponding variance fraction.
-        They are calculated as First (warming pattern and trend) and Second (ENSO 
-        pattern and ENSO index) EOF modes of SST anomaly after removing
-        the Annualcycle climatology.
+def global_sst_trend_and_enso(data=None, path=None, var=None, clim_start=None, clim_end=None, desired=None, 
+    start_time=None, end_time=None, to_range='0_360', standardize=False, 
+    normalize_pattern=True, normalize_index=False):
+    """
+    Calculate global SST warming trend and ENSO patterns using EOF analysis.
 
-        data: Processed gridded SST data in the shape of (time, lat, lon)
-        if not in the order, can be reordered as xarray.transpose
-        path (directory): path to data
-        var (str): variable name
-        clim_start: climatology start year
-        clim_end: climatology end year (if both None, whole period will be chosen to compute climatology)
-        desired: desired variables, can be choosen from 
+    This function computes the global SST warming trend, ENSO index, and their
+    corresponding variance fractions using the first two EOF modes of SST anomalies.
+    It first removes the annual cycle climatology and then applies EOF analysis.
+
+    Parameters:
+    ----------
+    data : xarray.DataArray or xarray.Dataset, optional
+        Gridded SST data with dimensions (time, lat, lon). If not provided, 
+        'path' and 'var' must be used to load the data.
+    path : str, optional
+        Directory path to the data. Required if 'data' is not provided.
+    var : str, optional
+        Name of the variable to load from the dataset.
+    clim_start : int, optional
+        Climatology start year.
+    clim_end : int, optional
+        Climatology end year (if both None, the entire period is used for climatology).
+    desired : list of str, optional
+        Desired outputs, which can include:
         ['sst_trend_pattern', 'sst_trend_timeseries', 'variance_fraction_trend', 
-        'enso_pattern', 'enso_index', 'variance_fraction_enso']
-        start_time (int): start year for the data to be visulaized
-        end_time (int): end year for the data to be visulaized
-        to_range (str default 0_360): Range of longitude for the data, 0_360 or -180_180
-        standardize (boolean): Normalize the data with Standard Deviation
-        Normalize_pattern (boolean): Normalize components (spatial Pattern) with singular values
-        Normalize_index (boolean): Normalize scores (timeseries) with singular values'''    
-    
+        'enso_pattern', 'enso_index', 'variance_fraction_enso']. 
+        Default is to return all.
+    start_time : int, optional
+        Start year for loading data.
+    end_time : int, optional
+        End year for loading data.
+    to_range : str, optional, default '0_360'
+        Longitude range for data adjustment. Options are '0_360' or '-180_180'.
+    standardize : bool, optional, default False
+        Whether to normalize the data with its standard deviation before EOF calculation.
+    normalize_pattern : bool, optional, default True
+        Whether to normalize spatial components (patterns) with singular values.
+    normalize_index : bool, optional, default False
+        Whether to normalize time series (scores) with singular values.
+
+    Returns:
+    -------
+    List containing the desired outputs: SST trend pattern, trend timeseries,
+    variance fraction of the trend, ENSO pattern, ENSO index, and variance fraction of ENSO.
+    """
+
+
     if desired is None:
-        desired = ['sst_trend_pattern', 'sst_trend_timeseries', 'variance_fraction_trend','enso_pattern', 'enso_index', 'variance_fraction_enso']
-    if standardize==None:
-        standardize=False
-    if normalize_index==None:
-        normalize_index = False
-    if normalize_pattern==None:
-        normalize_pattern = True
+        desired = [
+            'sst_trend_pattern', 'sst_trend_timeseries', 'variance_fraction_trend',
+            'enso_pattern', 'enso_index', 'variance_fraction_enso'
+        ]
     
-    if to_range==None:
-        to_range='0_360'    
-    if path is not None and var is not None:
-        if to_range==None:
-            to_range='0_360' ## otherwise provide -180_180
-        data = adjust_longitude(rename_dims_to_standard(load_data(path, var, start_time=start_time, end_time=end_time)), to_range=to_range)
-        data_anom = calculate_anomaly(data, clim_start=clim_start, clim_end=clim_end)
-    elif data is not None:
-        data_anom = calculate_anomaly(data, clim_start=clim_start, clim_end=clim_end)
-    solver = compute_rotated_eofs(data, rotated=False, n_modes=2, standardize=None, use_coslat=True)
-    # solver=compute_eofs(data_anom, lat_dim='lat')
-    return_desired = []
-    # eofs_ = solver.eofs(neofs=2, eofscaling=2)
-    # pcs_  = solver.pcs(npcs=2, pcscaling=1)
+
+    if path and var:
+        data = adjust_longitude(
+            rename_dims_to_standard(
+                load_data(path, var, start_time=start_time, end_time=end_time)
+            ),
+            to_range=to_range
+        )
+    
+
+    data_anom = calculate_anomaly(data, clim_start=clim_start, clim_end=clim_end)
+
+
+    solver = compute_rotated_eofs(
+        data_anom, rotated=False, n_modes=2, standardize=standardize, use_coslat=True
+    )
+    
+
     eofs_ = solver.components(normalized=normalize_pattern)
     pcs_ = solver.scores(normalized=normalize_index)
     var_frac_ = solver.explained_variance_ratio()
-    # var_frac_ = solver.varianceFraction(neigs=2)
-    if 'sst_trend_pattern' in desired:
-        return_desired.append(eofs_[0].squeeze())
-    if 'sst_trend_timeseries' in desired:
-        return_desired.append(pcs_[0].squeeze())
-    if 'variance_fraction_trend' in desired:
-        return_desired.append(var_frac_[0].squeeze())
-    if 'enso_pattern' in desired:
-        return_desired.append(eofs_[1].squeeze())
-    if 'enso_index' in desired:
-        return_desired.append(pcs_[1].squeeze())
-    if 'variance_fraction_enso' in desired:
-        return_desired.append(var_frac_[1].squeeze())
 
-    
-    if len(return_desired)==1:
-        return return_desired[0]
-    else:
-        return return_desired
+
+    result_dict = {
+        'sst_trend_pattern': eofs_[0].squeeze(),
+        'sst_trend_timeseries': (pcs_[0] / pcs_[0].std()).squeeze(),
+        'variance_fraction_trend': var_frac_[0].squeeze(),
+        'enso_pattern': eofs_[1].squeeze(),
+        'enso_index': (pcs_[1] / pcs_[1].std()).squeeze(),
+        'variance_fraction_enso': var_frac_[1].squeeze()
+    }
+
+    return_desired = [result_dict[key] for key in desired if key in result_dict]
+    return return_desired[0] if len(return_desired) == 1 else return_desired
 
 
 
-def compute_regional_eof_modes(data=None, path=None, var=None ,clim_start=None, clim_end=None, desired=None, start_time=None, end_time=None, 
-    lat_s=None, lat_e=None, lon_s=None, lon_e=None, to_range=None, n_modes=None, remove_trend=None, rotated=None, use_coslat=None, standardize=None, 
-    normalize_pattern=None, normalize_index=None):
-    '''This function is more generalized form of global_sst_trend_and_enso function.
-        
-        data: Processed gridded SST data in the shape of (time, lat, lon)
-        if not in the order, can be reordered as xarray.transpose
-        path (directory): path to data
-        var (str): variable name
-        desired: desired variables, can be choosen from 
-        ['regional_patterns', 'regional_timeseries', 'variance_fractions_regional']
-        start_time (int): start year for the data to be visulaized
-        end_time (int): end year for the data to be visulaized
-        to_range (str default 0_360): Range of longitude for the data, 0_360 or -180_180
-        lat_s = start latitude
-        lat_e = end latitude
-        lon_s = start longitude
-        lon_e = end longitude
-        standardize (boolean): Normalize the data with Standard Deviation
-        Normalize_pattern (boolean): Normalize components (spatial Pattern) with singular values
-        Normalize_index (boolean): Normalize scores (timeseries) with singular values
-        n_modes (int): number of modes to be calculated
-        remove_trend (boolean): Remove global mean variable (a timeseries)
-        rotated (str): Unrotated EOFs if None, otherwise 
-        Varimax for orthogonal rotations or Promax for Oblique
-        use_coslat (boolean): True if None, otherwise give False. It is used to calculated area-averaged EOFs
-        clim_start (int): Climatology start year
-        clim_end (int): Climatology end year  (if both None, whole period will be chosen to compute climatology)
-'''
+def compute_regional_eof_modes(data=None, path=None, var=None, clim_start=None, clim_end=None, desired=None, 
+    start_time=None, end_time=None, lat_s=90, lat_e=-90, lon_s=0, lon_e=360, 
+    to_range='0_360', n_modes=1, remove_trend=False, rotated=False, 
+    use_coslat=True, standardize=False, normalize_pattern=True, normalize_index=False):
+    """
+    Calculate regional EOF (Empirical Orthogonal Functions) modes from gridded SST data.
 
-    if lat_s==None and lat_e==None and lon_s==None and lon_e==None:
-        lat_s = 90
-        lat_e = -90
-        lon_s = 0
-        lon_e = 360
+    This generalized function computes EOFs for a specified regional domain, allowing for 
+    trend removal, rotation, and different normalization options.
 
-    if rotated ==None:
-        rotated = False
+    Parameters:
+    ----------
+    data : xarray.DataArray or xarray.Dataset, optional
+        Gridded SST data with dimensions (time, lat, lon). Use 'path' and 'var' 
+        instead if you want to load the data from a file.
+    path : str, optional
+        Directory path to the data. Required if 'data' is not provided.
+    var : str, optional
+        Name of the variable to load from the dataset.
+    clim_start : int, optional
+        Climatology start year.
+    clim_end : int, optional
+        Climatology end year (if both None, the entire period is used for climatology).
+    desired : list, optional
+        Desired outputs, which can be ['regional_patterns', 'regional_timeseries', 
+        'variance_fractions_regional']. Default is all three.
+    start_time : int, optional
+        Start year for loading data.
+    end_time : int, optional
+        End year for loading data.
+    lat_s : float, optional
+        Start latitude for the regional selection. Default is 90.
+    lat_e : float, optional
+        End latitude for the regional selection. Default is -90.
+    lon_s : float, optional
+        Start longitude for the regional selection. Default is 0.
+    lon_e : float, optional
+        End longitude for the regional selection. Default is 360.
+    to_range : str, optional
+        Target longitude range. Default is '0_360'. Use '-180_180' if needed.
+    n_modes : int, optional
+        Number of EOF modes to compute. Default is 1.
+    remove_trend : bool, optional
+        Whether to remove the global trend before calculating EOFs. Default is False.
+    rotated : bool, optional
+        Whether to apply Varimax or Promax rotation to the EOFs. Default is False.
+    use_coslat : bool, optional
+        Whether to use cosine latitude weighting. Default is True.
+    standardize : bool, optional
+        Whether to normalize the data with its standard deviation before EOF calculation. Default is False.
+    normalize_pattern : bool, optional
+        Whether to normalize spatial components (patterns) with singular values. Default is True.
+    normalize_index : bool, optional
+        Whether to normalize the time series (scores) with singular values. Default is False.
 
-    if standardize==None:
-        standardize=False
+    Returns:
+    -------
+    List containing the desired outputs: regional patterns, timeseries, and/or variance fractions.
+    """
 
-    if use_coslat==None:
-        use_coslat=True
-
-    if normalize_index==None:
-        normalize_index = False
-    if normalize_pattern==None:
-        normalize_pattern = True
-    
-    if remove_trend==None:
-        remove_trend==False    
-    
     if desired is None:
-  
         desired = ['regional_patterns', 'regional_timeseries', 'variance_fractions_regional']
+    
 
-    if to_range==None:
-        to_range='0_360'    
-    if path is not None and var is not None:
-        if to_range==None:
-            to_range='0_360' ## otherwise provide -180_180
-        data = adjust_longitude(rename_dims_to_standard(load_data(path, var, start_time=start_time, end_time=end_time, lat_s=lat_s, lat_e=lat_e, lon_s=lon_s, lon_e=lon_e)), to_range=to_range)
-        # data_anom = calculate_anomaly(data, clim_start=clim_start, clim_end=clim_end)
-    elif data is not None:
-        data = data
-    if remove_trend==False:
+    if path and var:
+        data = adjust_longitude(
+            rename_dims_to_standard(
+                load_data(
+                    path, var, start_time=start_time, end_time=end_time, 
+                    lat_s=lat_s, lat_e=lat_e, lon_s=lon_s, lon_e=lon_e
+                )
+            ),
+            to_range=to_range
+        )
+    
 
-        data_anom = calculate_anomaly(data, clim_start=clim_start, clim_end=clim_end)
-    else:
-        data_anom = calculate_anomaly(data, clim_start=clim_start, clim_end=clim_end) - calculate_global_mean_sst(data, lat_name='lat', lon_name='lon')
-    solver = compute_rotated_eofs(data, rotated=rotated, n_modes=n_modes, standardize=standardize, use_coslat=use_coslat)
-    # solver=compute_eofs(data_anom, lat_dim='lat')
-    return_desired = []
-    if 'regional_patterns' in desired:
-        return_desired.append(solver.components(normalized=normalize_pattern).squeeze())
-    if 'regional_timeseries' in desired:
-        return_desired.append(solver.scores(normalized=normalize_index).squeeze())
-    if 'variance_fractions_regional' in desired:
-        return_desired.append(solver.explained_variance_ratio().squeeze())
-
-    if len(return_desired)==1:
-        return return_desired[0]
-    else:
-        return return_desired
+    data_anom = calculate_anomaly(data, clim_start=clim_start, clim_end=clim_end)
+    if remove_trend:
+        global_mean_sst = calculate_global_mean_sst(data, lat_name='lat', lon_name='lon')
+        data_anom -= global_mean_sst
 
 
+    solver = compute_rotated_eofs(
+        data_anom, rotated=rotated, n_modes=n_modes, 
+        standardize=standardize, use_coslat=use_coslat
+    )
 
 
-def compute_pdo(data=None, path=None, var=None ,clim_start=None, clim_end=None, desired=None, start_time=None, end_time=None, to_range=None, 
-    standardize=None, normalize_pattern=None, normalize_index=None, lat_s=None, lat_e=None, lon_s=None, lon_e=None, remove_trend=None):
+    result_dict = {
+        'regional_patterns': solver.components(normalized=normalize_pattern).squeeze(),
+        'regional_timeseries': (solver.scores(normalized=normalize_index) / 
+                                solver.scores(normalized=normalize_index).std()).squeeze(),
+        'variance_fractions_regional': solver.explained_variance_ratio().squeeze()
+    }
 
-    ''' This function calculates conventional PDO index and PDO pattern and 
-        variance fraction.
-        It is calculated as First EOF modes of SST anomaly in North Pacific above 20N 
-        after removing the Annualcycle climatology and global mean SST (warming trend).
 
-        data: Processed gridded SST data in the shape of (time, lat, lon)
-        if not in the order, can be reordered as xarray.transpose
-        path (directory): path to data
-        var (str): variable name
-        clim_start: climatology start year
-        clim_end: climatology end year (if both None, whole period will be chosen to compute climatology)
-        desired: desired variables, can be choosen from 
-        ['pdo_pattern', 'pdo_index', 'variance_fraction_pdo'] 
-        start_time (int): start year for the data to be visulaized
-        end_time (int): end year for the data to be visulaized
-        to_range (str default 0_360): Range of longitude for the data, 0_360 or -180_180
-        standardize (boolean): Normalize the data with Standard Deviation
-        Normalize_pattern (boolean): Normalize components (spatial Pattern) with singular values
-        Normalize_index (boolean): Normalize scores (timeseries) with singular values
-        remove_trend (boolean): default is False and PDO index is mode 2, otherwise mode 1.
+    return_desired = [result_dict[key] for key in desired if key in result_dict]
+    return return_desired[0] if len(return_desired) == 1 else return_desired
 
-        lat_s = start latitude
-        lat_e = end latitude
-        lon_s = start longitude
-        lon_e = end longitude
-        latitude and longitude ranges can be choosen to experience various versions of PDO'''
-    n_modes=None
 
-    if lat_s==None and lat_e==None and lon_s==None and lon_e==None:
-        lat_s = 70
-        lat_e = 20
-        lon_s = 110
-        lon_e = 260
-    if remove_trend==None or remove_trend==False:
-        remove_trend==False
-        n_modes=2
-    elif remove_trend==True:
-        n_modes=1
-    else:
-        print('remove_trends takes only boolean arguments, i.e. True or False')
-    if standardize==None:
-        standardize=False
-    if normalize_index==None:
-        normalize_index = False
-    if normalize_pattern==None:
-        normalize_pattern = True
-    if to_range==None:
-        to_range='0_360'    ## otherwise provide -180_180
 
+
+def compute_pdo(data=None, path=None, var=None, clim_start=None, clim_end=None, desired=None, 
+    start_time=None, end_time=None, to_range='0_360', standardize=False, 
+    normalize_pattern=True, normalize_index=False, lat_s=70, lat_e=20, lon_s=110, 
+    lon_e=260, remove_trend=False):
+    """
+    Calculate the PDO (Pacific Decadal Oscillation) index and pattern.
+
+    This function calculates the conventional PDO index, pattern, and variance fraction 
+    as the first EOF modes of SST anomaly in the North Pacific (above 20°N) after 
+    removing the annual cycle climatology and global mean SST (to account for the warming trend).
+
+    Parameters:
+    ----------
+    data : xarray.DataArray or xarray.Dataset, optional
+        Gridded SST data with dimensions (time, lat, lon). Use 'path' and 'var' 
+        instead if you want to load the data from a file.
+    path : str, optional
+        Directory path to the data. Required if 'data' is not provided.
+    var : str, optional
+        Name of the variable to load from the dataset.
+    clim_start : int, optional
+        Climatology start year.
+    clim_end : int, optional
+        Climatology end year (if both None, whole period will be chosen for climatology).
+    desired : list, optional
+        Desired outputs, which can be ['pdo_pattern', 'pdo_index', 'variance_fraction_pdo']. 
+        Default is all three.
+    start_time : int, optional
+        Start year for loading data.
+    end_time : int, optional
+        End year for loading data.
+    to_range : str, optional
+        Target longitude range. Default is '0_360'. Use '-180_180' if needed.
+    standardize : bool, optional
+        Whether to normalize the data with its standard deviation.
+    normalize_pattern : bool, optional
+        Whether to normalize spatial components with singular values. Default is True.
+    normalize_index : bool, optional
+        Whether to normalize the time series (scores) with singular values. Default is False.
+    remove_trend : bool, optional
+        Whether to remove the global trend. Default is False, in which case mode 2 is used. 
+        If True, mode 1 is used.
+
+    Returns:
+    -------
+    List containing the desired outputs: PDO pattern, PDO index, and/or variance fraction.
+    """
 
     if desired is None:
         desired = ['pdo_pattern', 'pdo_index', 'variance_fraction_pdo']
+    
 
-    if path is not None and var is not None:
+    n_modes = 1 if remove_trend else 2
+    
 
-        data = adjust_longitude(rename_dims_to_standard(load_data(path, var, start_time=start_time, end_time=end_time, lat_s=lat_s, lat_e=lat_e, lon_s=lon_s, lon_e=lon_e)), to_range=to_range)
-        # data_anom = calculate_anomaly(data, clim_start=clim_start, clim_end=clim_end)
-    elif data is not None:
-        data = data
+    if path and var:
+        data = adjust_longitude(
+            rename_dims_to_standard(
+                load_data(
+                    path, var, start_time=start_time, end_time=end_time, 
+                    lat_s=lat_s, lat_e=lat_e, lon_s=lon_s, lon_e=lon_e
+                )
+            ),
+            to_range=to_range
+        )
 
 
     data_anomaly = calculate_anomaly(data)
-    data_pdo = data.sel(lat=slice(lat_s, lat_e), lon=slice(lon_s, lon_e))
-    if remove_trend==remove_trend:
+    data_pdo = data_anomaly.sel(lat=slice(lat_s, lat_e), lon=slice(lon_s, lon_e))
+    
+
+    if remove_trend:
+        data_pdo_anomaly = data_pdo - calculate_global_mean_sst(data, lat_name='lat', lon_name='lon')
+    else:
         data_pdo_anomaly = calculate_anomaly(data_pdo, clim_start=clim_start, clim_end=clim_end)
-    else:
-        data_pdo_anomaly = calculate_anomaly(data_pdo, clim_start=clim_start, clim_end=clim_end) - calculate_global_mean_sst(data, lat_name='lat', lon_name='lon')
-    # solver=compute_eofs(data_pdo_anomaly, lat_dim='lat')
-    solver = compute_rotated_eofs(data_pdo_anomaly, rotated=False, n_modes=1, standardize=None, use_coslat=True)
-    return_desired = []
-    if remove_trend==False:
-        if 'pdo_pattern' in desired:
-            return_desired.append(solver.components()[n_modes-1].squeeze())
-        if 'pdo_index' in desired:
-            return_desired.append(solver.scores()[n_modes-1].squeeze())
-        if 'variance_fraction_pdo' in desired:
-            return_desired.append(solver.explained_variance_ratio()[n_modes-1].squeeze())
-    else:
-        if 'pdo_pattern' in desired:
-            return_desired.append(solver.components().squeeze())
-        if 'pdo_index' in desired:
-            return_desired.append(solver.scores().squeeze())
-        if 'variance_fraction_pdo' in desired:
-            return_desired.append(solver.explained_variance_ratio().squeeze())
+    
 
-    if len(return_desired)==1:
-        return return_desired[0]
-    else:
-        return return_desired
+    solver = compute_rotated_eofs(
+        data_pdo_anomaly, rotated=False, n_modes=n_modes, 
+        standardize=standardize, use_coslat=True
+    )
+    
+
+    result_dict = {
+        'pdo_pattern': solver.components()[n_modes - 1].squeeze(),
+        'pdo_index': (solver.scores()[n_modes - 1] / solver.scores()[n_modes - 1].std()).squeeze(),
+        'variance_fraction_pdo': solver.explained_variance_ratio()[n_modes - 1].squeeze()
+    }
+    
+
+    return_desired = [result_dict[key] for key in desired if key in result_dict]
+    return return_desired[0] if len(return_desired) == 1 else return_desired
 
 
 
+def compute_amo(data=None, path=None, var=None, clim_start=None, clim_end=None, desired=None, 
+    start_time=None, end_time=None, lat_s=70, lat_e=0, lon_s=280, lon_e=360, 
+    to_range='0_360'):
+    """
+    Calculate the AMO (Atlantic Multidecadal Oscillation) index and pattern.
 
-def compute_amo(path=None, var=None, data=None, clim_start=None, clim_end=None, desired=None, start_time=None, end_time=None, lat_s=None, lat_e=None, lon_s=None, lon_e=None, to_range=None):
+    This function calculates the conventional AMO index and AMO pattern as the 
+    area-averaged SST anomalies and time-averaged SST anomalies in the North Atlantic 
+    (0°N-70°N) after removing the annual cycle climatology and global mean SST (to 
+    account for the warming trend).
 
-    if lat_s==None and lat_e==None and lon_s==None and lon_e==None:
-        lat_s = 70
-        lat_e = 0
-        lon_s = 280
-        lon_e = 360
-    ''' This function calculates conventional AMO index and AMO pattern.
-        It is calculated as area-averaged SST anomalies and time averaged 
-        SST anomalies in North Atlantic above 0N after removing the Annualcycle 
-        climatology and global mean SST (warming trend).
+    Parameters:
+    ----------
+    data : xarray.DataArray or xarray.Dataset, optional
+        Gridded SST data with dimensions (time, lat, lon). Use 'path' and 'var' 
+        instead if you want to load the data from a file.
+    path : str, optional
+        Directory path to the data. Required if 'data' is not provided.
+    var : str, optional
+        Name of the variable to load from the dataset.
+    start_time : int, optional
+        Start year for loading data.
+    end_time : int, optional
+        End year for loading data.
+    clim_start : int, optional
+        Climatology start year.
+    clim_end : int, optional
+        Climatology end year (if both None, whole period will be chosen for climatology).
+    desired : list, optional
+        Desired outputs, which can be ['amo_pattern', 'amo_index']. Default is both.
+    lat_s : float, optional
+        Start latitude for the region. Default is 70 (North).
+    lat_e : float, optional
+        End latitude for the region. Default is 0 (Equator).
+    lon_s : float, optional
+        Start longitude for the region. Default is 280 (Western Atlantic).
+    lon_e : float, optional
+        End longitude for the region. Default is 360.
+    to_range : str, optional
+        Target longitude range. Default is '0_360'. Use '-180_180' if needed.
 
-        data: Processed gridded SST data in the shape of (time, lat, lon)
-        if not in the order, can be reordered as xarray.transpose
-        path (directory): path to data
-        var (str): variable name
-        start_time (int): start year for the data to be visulaized
-        end_time (int): end year for the data to be visulaized
-        clim_start: climatology start year
-        clim_end: climatology end year (if both None, whole period will be chosen to compute climatology)
-        desired: desired variables, can be choosen from 
-        ['amo_pattern', 'amo_index'] 
-        lat_s = start latitude
-        lat_e = end latitude
-        lon_s = start longitude
-        lon_e = end longitude'''
+    Returns:
+    -------
+    List containing the desired outputs: AMO pattern and/or AMO index.
+    """
 
-    if desired==None:
+    if desired is None:
         desired = ['amo_pattern', 'amo_index']
 
-    if to_range==None:
-        to_range='0_360'    ## otherwise provide -180_180
 
     if path is not None and var is not None:
+        data = adjust_longitude(
+            rename_dims_to_standard(
+                load_data(path, var, start_time=start_time, end_time=end_time)
+            ),
+            to_range=to_range
+        )
 
-        data = adjust_longitude(rename_dims_to_standard(load_data(path, var, start_time=start_time, end_time=end_time, lat_s=lat_s, lat_e=lat_e, lon_s=lon_s, lon_e=lon_e)), to_range=to_range)
-        # data_anom = calculate_anomaly(data, clim_start=clim_start, clim_end=clim_end)
-    elif data is not None:
-        data = data
 
     north_atlantic_sst = data.sel(lat=slice(lat_s, lat_e), lon=slice(lon_s, lon_e))
     
 
-    data_anomalies = calculate_anomaly(north_atlantic_sst, clim_start=clim_start, clim_end=clim_end)
+    data_anomalies = calculate_anomaly(
+        north_atlantic_sst, clim_start=clim_start, clim_end=clim_end
+    )
     
 
     global_mean_data = calculate_global_mean_sst(data, lat_name='lat', lon_name='lon')
     
 
-    amo_index = data_anomalies.weighted(compute_weights(data_anomalies)).mean(('lat', 'lon')) - global_mean_data
+    amo_index = (
+        data_anomalies.weighted(compute_weights(data_anomalies)).mean(('lat', 'lon')) 
+        - global_mean_data
+    )
     
 
-    # if smoothing_window!=None:
-    #     amo_index = amo_index.rolling(time=smoothing_window, center=True).mean().dropna(dim='time')
+    amo_pattern = (
+        xr.cov(calculate_anomaly(data), amo_index, dim='time') 
+        / amo_index.var()
+    )
     
 
-    # amo_index = regional_anomaly
-    amo_pattern = xr.cov(calculate_anomaly(data), amo_index, dim='time')/amo_index.var()
-    return_desired = []
-    if 'amo_pattern' in desired:
-        return_desired.append(amo_pattern)
-    if 'amo_index' in desired:
-        return_desired.append(amo_index)
+    result_dict = {
+        'amo_pattern': amo_pattern,
+        'amo_index': amo_index
+    }
     
-    if len(return_desired)==1:
-        return return_desired[0]
-    else:
-        return return_desired
+
+    return_desired = [result_dict[key] for key in desired if key in result_dict]
+    return return_desired[0] if len(return_desired) == 1 else return_desired
 
 
-def compute_nao(path=None, var=None, data=None, clim_start=None, clim_end=None, desired=None, lat_s=None, lat_e=None, rotated=None, use_coslat=None, standardize=None, n_modes=2, to_range=None):
 
-    ''' This function calculates NAO index, NAO pattern and variance fraction.
-        It is calculated as Second EOF modes of 500mb Geo-potential height 
-        anomaly above 20N after removing the Annualcycle climatology.
+def compute_nao(data=None, path=None, var=None, clim_start=None, clim_end=None, desired=None, 
+    lat_s=None, lat_e=None, use_coslat=None, standardize=None, to_range=None, n_modes=10, nao_mode=None,
+    start_time=None, end_time=None, rotated='Varimax'):
+    '''
+    This function calculates the NAO index, NAO pattern, and variance fraction.
+    It is calculated as the second EOF mode of 500mb geopotential height 
+    anomaly above 20N after removing the annual cycle climatology.
 
-        data: Processed gridded SST data in the shape of (time, lat, lon)
-        if not in the order, can be reordered as xarray.transpose
+    Parameters:
+    - data : xarray.DataArray or xarray.Dataset
+        Processed gridded data in the shape of (time, lat, lon).
+    
+    - path : str, optional
+        Path to the data file (if data is to be loaded directly).
+    
+    - var : str, optional
+        Variable name in the dataset (used if loading from a file).
+    
+    - clim_start : int, optional
+        Climatology start year.
+    
+    - clim_end : int, optional
+        Climatology end year. If None, the whole period will be used.
+    
+    - desired : list, optional
+        List of desired outputs, e.g., ['nao_pattern', 'nao_index', 'variance_fraction_nao'].
+    
+    - lat_s : float, optional
+        Start latitude for selecting the northern region.
+    
+    - lat_e : float, optional
+        End latitude for selecting the northern region.
+    
+    - use_coslat : bool, optional
+        Whether to apply cosine latitude weighting. Default is True.
+    
+    - standardize : bool, optional
+        If True, standardizes the data. Default is False.
+    
+    - to_range : str, optional
+        Longitude range, either '0_360' or '-180_180'. Default is '0_360'.
+    
+    - nao_mode : int, optional
+        The EOF mode number to be considered as NAO. Default is 1.
+    
+    - start_time, end_time : str, optional
+        Time range for selecting data.
+    
+    - rotated : str, optional
+        Rotation method for EOFs. Options: None, 'Varimax', 'Promax'. Default is 'Varimax'.
+    '''
+    
 
-        clim_start: climatology start year
-        clim_end: climatology end year (if both None, whole period will be chosen to compute climatology)
-        desired: desired variables, can be choosen from 
-        ['pdo_pattern', 'pdo_index', 'variance_fraction_pdo'] 
-        lat_s = start latitude
-        lat_e = end latitude
-        rotated: if rotated analysis is required. None if unrotated, 
-        Varimax and Promax for rotated
-        use_coslat: True if None, otherwise give False. It is used to calculated area-averaged EOFs
-        standardize = False if None, make it True if you want to standardize
-        n_modes: default 2; this will assume that 2nd mode is NAO, change accordingly'''
+    lat_s = lat_s if lat_s is not None else 90
+    lat_e = lat_e if lat_e is not None else 20
+    standardize = standardize if standardize is not None else False
+    desired = desired if desired is not None else ['nao_pattern', 'nao_index', 'variance_fraction_nao']
+    to_range = to_range if to_range is not None else '0_360'
+    nao_mode = nao_mode if nao_mode is not None else 1
 
-
-    if standardize==None:
-        standardize=False
-
-    if desired is None:
-
-        desired = ['nao_pattern', 'nao_index', 'variance_fraction_nao']
-
-    if to_range==None:
-        to_range='0_360'    ## otherwise provide -180_180
 
     if path is not None and var is not None:
+        data = adjust_longitude(rename_dims_to_standard(
+            load_data(path, var, start_time=start_time, end_time=end_time, lat_s=lat_s, lat_e=lat_e)
+        ), to_range=to_range)
 
-        data = adjust_longitude(rename_dims_to_standard(load_data(path, var, start_time=start_time, end_time=end_time, lat_s=lat_s, lat_e=lat_e, lon_s=lon_s, lon_e=lon_e)), to_range=to_range)
-        # data_anom = calculate_anomaly(data, clim_start=clim_start, clim_end=clim_end)
-    elif data is not None:
-        data = data
+
+    if data is None:
+        raise ValueError("Data must be provided either directly or via path and var.")
 
     north_geop = data.sel(lat=slice(lat_s, lat_e))
     
@@ -383,24 +469,23 @@ def compute_nao(path=None, var=None, data=None, clim_start=None, clim_end=None, 
     data_anomalies = calculate_anomaly(north_geop, clim_start=clim_start, clim_end=clim_end)
     
 
-    nao_index = compute_rotated_eofs(data_anomalies, rotated=rotated, n_modes=n_modes, standardize=standardize, use_coslat=use_coslat).scores()[n_modes-1]
+    eofs_result = compute_rotated_eofs(
+        data_anomalies, rotated=rotated, n_modes=n_modes, 
+        standardize=standardize, use_coslat=use_coslat
+    )
 
-    nao_index = nao_index/nao_index.std()
+
+    nao_index = eofs_result.scores()[nao_mode-1] / eofs_result.scores()[nao_mode-1].std()
+    nao_pattern = eofs_result.components()[nao_mode-1]
+    variance_fraction_nao = eofs_result.explained_variance_ratio()[nao_mode-1]
     
-    nao_pattern = compute_rotated_eofs(data_anomalies, rotated=rotated, n_modes=n_modes, standardize=standardize, use_coslat=use_coslat).components()[n_modes-1]
-
-    variance_fraction_nao = compute_rotated_eofs(data_anomalies, rotated=rotated, n_modes=n_modes, standardize=standardize, use_coslat=use_coslat).explained_variance_ratio()[1]
-    return_desired = []
-    if 'nao_pattern' in desired:
-        return_desired.append(nao_pattern.squeeze())
-    if 'nao_index' in desired:
-        return_desired.append(nao_index.squeeze())
-    if 'variance_fraction_nao' in desired:
-        return_desired.append(variance_fraction_nao.squeeze())
+    result_dict = {
+        'nao_pattern': nao_pattern.squeeze(),
+        'nao_index': nao_index.squeeze(),
+        'variance_fraction_nao': variance_fraction_nao.squeeze(),
+    }
     
-    if len(return_desired)==1:
-        return return_desired[0]
-    else:
-        return return_desired
 
+    return_desired = [result_dict[key] for key in desired if key in result_dict]
+    return return_desired[0] if len(return_desired) == 1 else return_desired
 

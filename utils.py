@@ -2,7 +2,6 @@
 
 import xarray as xr
 import numpy as np
-from eofs.xarray import Eof
 import xeofs
 import matplotlib.pyplot as plt
 import cartopy
@@ -31,29 +30,29 @@ def calculate_anomaly(data, clim_start=None, climatology_dim='time', clim_end=No
         return data.groupby(f'{climatology_dim}.{freq}') - climatology
 
 
-def compute_eofs(data, lat_dim='lat'):
+# def compute_eofs(data, lat_dim='lat'):
 
-    ''' This functions computes EOF using eofs module '''
+#     ''' This functions computes EOF using eofs module '''
 
-    coslat = np.cos(np.deg2rad(data.coords[lat_dim].values))
-    weights = np.sqrt(coslat)
+#     coslat = np.cos(np.deg2rad(data.coords[lat_dim].values))
+#     weights = np.sqrt(coslat)
 
-    if weights.ndim == 1 and len(weights) == data.sizes[lat_dim]:
-        # Expand weights for broadcasting
-        weights = weights[..., np.newaxis]  # Add a new axis for broadcasting in EOF calculation
-    else:
-        raise ValueError("Weights dimensions do not align with the data anomaly.")
+#     if weights.ndim == 1 and len(weights) == data.sizes[lat_dim]:
+#         # Expand weights for broadcasting
+#         weights = weights[..., np.newaxis]  # Add a new axis for broadcasting in EOF calculation
+#     else:
+#         raise ValueError("Weights dimensions do not align with the data anomaly.")
 
-    try:
-        if lat_dim not in data.dims:
-            solver = Eof(data)
-        else:
-            solver = Eof(data, weights=weights)
-        return solver
+#     try:
+#         if lat_dim not in data.dims:
+#             solver = Eof(data)
+#         else:
+#             solver = Eof(data, weights=weights)
+#         return solver
         
-    except Exception as e:
-        print(f"Error creating EOF solver: {e}")
-        return None  # Return None on failure to avoid confusion with the exception message
+#     except Exception as e:
+#         print(f"Error creating EOF solver: {e}")
+#         return None  # Return None on failure to avoid confusion with the exception message
 
 def line_plot(data, figsize=None, dpi=None, variance_fraction=None, color=None, label=None):
 
@@ -88,7 +87,7 @@ def line_plot(data, figsize=None, dpi=None, variance_fraction=None, color=None, 
 
 
 
-def contour_plot(data, projection=None, figsize=None, dpi=None, cmap=None, extend=None, levels=None, central_lon=None, central_lat=None):
+def contour_plot(data, projection=None, figsize=None, dpi=None, cmap=None, extend=None, levels=None, central_lon=None, central_lat=None, ax_global=False):
 
     ''' This function plots the calculated variability patterbs for the 
         priliminary check if the user wants.
@@ -126,56 +125,79 @@ def contour_plot(data, projection=None, figsize=None, dpi=None, cmap=None, exten
                     coords={**data.coords, 'lon': cyclic_lon},  # Replace the original longitude with cyclic longitude
                     attrs=data.attrs  # Copy the original attributes
                 )
-                ax.set_global()
+                if ax_global==True:
+                    ax.set_global()
                  
                 data = cyclic_data#.plot.contourf(levels=levels, cmap=cmap, extend=extend, transform=ccrs.PlateCarree())
             # else:
             data.plot.contourf(levels=levels, cmap=cmap, extend=extend, transform=ccrs.PlateCarree())
             # ax.coastlines()
             # ax.cfeature()
-            ax.add_feature(cfeature.LAND)
-            ax.add_feature(cfeature.OCEAN)
+            ax.add_feature(cfeature.LAND, facecolor='grey')
+            ax.add_feature(cfeature.OCEAN, facecolor='w')
             ax.add_feature(cfeature.COASTLINE)
     except Exception as e:
         return print(f"Error while plotting: {e}")
 
 
 
-def compute_rotated_eofs(data, rotated=None, n_modes=10, standardize=None, use_coslat=None):
-    ''' This functions computes EOF using eofs module 
+def compute_rotated_eofs(data, rotated=None, n_modes=None, standardize=None, use_coslat=None):
+    """
+    Compute EOFs using the xeofs module, with optional Varimax or Promax rotation.
 
-        data: xarray.DataArray with time dimension
-        rotated (str): Unrotated EOFs if None, otherwise 
-        varimax for orthogonal rotations or Promax for Oblique
-        use_coslat (boolean): True if None, otherwise give False. It is used to calculated area-averaged EOFs
-        standardize (Boolean) = False if None, make it True if you want to standardize
-        n_modes (int >0): change accordingly''' 
+    Parameters:
+    -----------
+    data : xarray.DataArray
+        Input data with a time dimension.
+    rotated : str, optional
+        Specify 'Varimax' for orthogonal rotation or 'Promax' for oblique rotation.
+        Leave as None for unrotated EOFs.
+    n_modes : int, default=10
+        Number of modes to compute.
+    standardize : bool, optional
+        Whether to standardize the data. Default is False.
+    use_coslat : bool, optional
+        If True (default), weights EOFs by the cosine of latitude for area-averaging.
 
-    if standardize==None:
-        standardize=False
-    if use_coslat==None:
-        use_coslat=True
+    Returns:
+    --------
+    model : xeofs.single.EOF or xeofs.single.EOFRotator
+        The fitted EOF model, either rotated or unrotated.
 
-    if rotated == None:
-        rotated=False
+    Notes:
+    ------
+    - Varimax corresponds to orthogonal rotations (power=1).
+    - Promax corresponds to oblique rotations (power=4).
+    - Returns None if an invalid rotation option is provided.
+    """
+    if rotated==None:
+        n_modes = n_modes if n_modes is not None else 1
+    else:
+        n_modes = n_modes if n_modes is not None else 10
+    standardize = standardize if standardize is not None else False
+    use_coslat = use_coslat if use_coslat is not None else True
+    rotated = rotated if rotated is not None else False
+
     model = xeofs.single.EOF(n_modes=n_modes, standardize=standardize, use_coslat=use_coslat)
-    model.fit(data, dim="time")
+    
     try:
-        if rotated==False:
+        model.fit(data, dim="time")
+        
+        # If no rotation is specified, return the fitted EOF model.
+        if not rotated:
             return model
-
+        
+        # Choose the rotation method based on the input.
         if rotated == 'Varimax':
-            rot_model = xeofs.single.EOFRotator(n_modes=n_modes, power=1)  ## power=1, 'Varimax (Orthogonal) rotation'
+            rot_model = xeofs.single.EOFRotator(n_modes=n_modes, power=1)  # Varimax: Orthogonal rotation
             return rot_model.fit(model)
         elif rotated == 'Promax':
-            rot_model = xeofs.single.EOFRotator(n_modes=n_modes, power=4)  ## power=1, 'Promax (Obligue) rotation'
+            rot_model = xeofs.single.EOFRotator(n_modes=n_modes, power=4)  # Promax: Oblique rotation
             return rot_model.fit(model)
         else:
-            print('Incorrect statement for rotated, give only None or Varimax or Promax')        
-        return None
-
-
-
+            print("Invalid rotation option. Please specify None, 'Varimax', or 'Promax'.")
+            return None
+    
     except Exception as e:
-        print(f"Error creating EOF solver: {e}")
-        return None  # Return None on failure to avoid confusion with the exception message
+        print(f"Error during EOF calculation: {e}")
+        return None
