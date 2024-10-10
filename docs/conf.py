@@ -17,9 +17,17 @@ release = '1.2.1'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinx.ext.viewcode']
-
-
+extensions = [
+    "sphinx.ext.napoleon",
+    # "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx_gallery.gen_gallery",
+    "sphinx_design",
+    "nbsphinx",
+    "sphinx_copybutton",
+    "myst_parser",  # markdown support
+]
+autosummary_generate = True  # Turn on sphinx.ext.autosummary
 templates_path = ['_templates']
 exclude_patterns = []
 
