@@ -27,18 +27,17 @@ Overview
    - `compute_regional_eof_modes`: Calculate regional EOF modes (Rotated and unrotated) from gridded data.
 
 2. **xIndices.preprocess_data**: 
-   This module handles data preprocessing tasks, such as loading the data, regridding, re-order dimesnions, preparing data for EOF analysis etc.
+   This module handles data preprocessing tasks, such as calculating climatological anomalies and preparing data for EOF analysis.
 
-   - `load_data`: Load NetCDF data into `xarray` DataArrays.
-   - `write_netcdf`: Save processed data back to NetCDF format.
-   - `regridding`: Can be useful to regrid xarray.DataArray or xarray.Dataset
+   - `calculate_anomaly`: Calculate anomalies based on a specified climatological period.
    - `adjust_longitude`: Adjust the longitude range of the dataset.
    - `rename_dims_to_standard`: Rename dimensions to standard names for easier processing.
 
 3. **xIndices.utils**: 
-   Contains utility functions which acts as helper functions for analysis and visualization.
-   - `compute_weights`: Calculates latitudinal weights (helper function).
-   - `calculate_anomaly`: Calculate anomalies based on a specified climatological period.
+   Contains utility functions that assist with common tasks required in data processing and analysis.
+
+   - `load_data`: Load NetCDF data into `xarray` DataArrays.
+   - `save_to_netcdf`: Save processed data back to NetCDF format.
    - `compute_rotated_eofs`: Compute EOFs with optional rotation using Varimax or Promax methods.
    - `line_plot`: Help visulize 1D data such as indices or PCs
    - `contour_plot`: Help visulize 2D data such as patterns or EOFs
