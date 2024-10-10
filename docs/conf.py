@@ -22,8 +22,8 @@ extensions = [
     # "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     # "sphinx_design",
-    "nbsphinx",
-    "sphinx_copybutton",
+    # "nbsphinx",
+    # "sphinx_copybutton",
     "myst_parser",  # markdown support
 ]
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
