@@ -21,7 +21,7 @@ extensions = [
     "sphinx.ext.napoleon",
     # "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
-    "sphinx_design",
+    # "sphinx_design",
     "nbsphinx",
     "sphinx_copybutton",
     "myst_parser",  # markdown support
