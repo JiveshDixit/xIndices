@@ -21,7 +21,6 @@ extensions = [
     "sphinx.ext.napoleon",
     # "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
-    "sphinx_gallery.gen_gallery",
     "sphinx_design",
     "nbsphinx",
     "sphinx_copybutton",
