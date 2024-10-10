@@ -1,0 +1,11 @@
+name: xeofs
+channels:
+  - conda-forge
+  - nodefaults  # https://github.com/readthedocs/readthedocs.org/issues/9527
+dependencies:
+  - python=3.11
+  - rpy2
+  - pandoc
+  - pip
+  - pip:
+    - -e ../.[complete,docs]
