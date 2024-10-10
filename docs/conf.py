@@ -24,7 +24,7 @@ extensions = [
     # "sphinx_design",
     # "nbsphinx",
     # "sphinx_copybutton",
-    "myst_parser",  # markdown support
+    # "myst_parser",  # markdown support
 ]
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
 templates_path = ['_templates']
