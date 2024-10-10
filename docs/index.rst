@@ -57,8 +57,30 @@ Utils Module
    :undoc-members:
    :show-inheritance:
 
+Detailed Documentation
+----------------------
 
+Below are detailed descriptions of the modules and their functions. Click on each to view the complete documentation:
 
+.. automodule:: xIndices.indices
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: xIndices.preprocess_data
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: xIndices.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: xIndices.main
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 .. toctree::
    :maxdepth: 1
