@@ -27,9 +27,6 @@ API Reference
 -------------
 The following sections provide details on the functions and classes available in xIndices.
 
-.. automodule:: xIndices
-   :members:
-   :show-inheritance:
 
 Indices Module
 --------------
