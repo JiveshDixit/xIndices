@@ -54,17 +54,17 @@ Detailed Documentation
 
 Below are detailed descriptions of the modules and their functions. Click on each to view the complete documentation:
 
-.. automodule::xIndices.indices
+.. automodule:: xIndices.indices
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: preprocess_data
+.. automodule:: xIndices.preprocess_data
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: utils
+.. automodule:: xIndices.utils
    :members:
    :undoc-members:
    :show-inheritance:
