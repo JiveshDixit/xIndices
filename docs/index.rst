@@ -8,7 +8,6 @@ Welcome to xIndices's documentation!
    installation
    usage
    modules
-   examples
 
 xIndices Overview
 -----------------
@@ -20,9 +19,9 @@ Module Contents
 .. toctree::
    :maxdepth: 2
 
-   xIndices/indices
-   xIndices/preprocess_data
-   xIndices/utils
+   indices
+   preprocess_data
+   utils
 
 API Reference
 -------------
