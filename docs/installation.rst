@@ -18,14 +18,18 @@ Installing xIndices
 You can install `xIndices` directly from PyPI using `pip`. Run the following command in your terminal:
 
 Using pip:
+
 .. code-block:: bash
-   conda create -n x_indices -c conda forge python=3.11 xesmf (MANDATORY)
+
+   conda create -n x_indices -c conda forge python=3.11 xesmf       ##(MANDATORY)
    conda activate x_indices
    pip install xIndices
 
 Using conda:
+
 .. code-block:: bash
-   conda create -n x_indices -c conda forge python=3.11 (OPTIONAL)
+
+   conda create -n x_indices -c conda forge python=3.11             ##(OPTIONAL)
    conda activate x_indices
    conda install -c jiveshdixit -c conda-forge xindices
 
