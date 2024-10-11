@@ -17,18 +17,32 @@ release = '1.2.1'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = [
-    "sphinx.ext.napoleon",
-    "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
-    # "sphinx_design",
-    # "nbsphinx",
-    # "sphinx_copybutton",
-    # "myst_parser",  # markdown support
-]
+extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.mathjax',
+              'sphinx.ext.viewcode',
+              'sphinx.ext.autosummary',
+              'sphinx.ext.intersphinx',
+              'sphinx.ext.extlinks',
+              'matplotlib.sphinxext.plot_directive',
+              'sphinx_issues',]
+
+html_sidebars = {'**': ['sidebar_toc.html',
+                        'relations.html',
+                        'sourcelink.html',
+                        'searchbox.html']}
+
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
 templates_path = ['_templates']
 exclude_patterns = []
+
+# The suffix of source filenames.
+source_suffix = '.rst'
+
+# The encoding of source files.
+#source_encoding = 'utf-8-sig'
+
+# The master toctree document.
+master_doc = 'index'
 
 html_logo = "./logo.jpeg"
 
