@@ -17,10 +17,6 @@ xIndices Modules
    xIndices/indices
    xIndices/preprocess_data
    xIndices/utils
-   xIndices/indices
-   xIndices/preprocess_data
-   xIndices/utils
-   xIndices/main
 
 Overview
 --------
