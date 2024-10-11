@@ -5,15 +5,15 @@ build:
   tools:
     python: "3.10"
 
-install:
-  - method: pip
-    path: .
+# install:
+#   - method: pip
+#     path: .
 
-# python:
-#   install:
-#     - requirements: requirements.txt
-#     - method: pip
-#       path: .
+python:
+  install:
+    - requirements: requirements.txt
+    - method: pip
+      path: .
 
 sphinx:
   configuration: docs/conf.py
