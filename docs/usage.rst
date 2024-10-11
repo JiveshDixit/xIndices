@@ -13,6 +13,7 @@ Importing the module:
    from xIndices.preprocess_data import load_data, regridding
    from xIndices.indices import global_sst_trend_and_enso, compute_regional_eof_modes
    from xIndices.utils import line_plot, contour_plot
+   import numpy as np
 
 Loading Data
 ------------
