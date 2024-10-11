@@ -3,14 +3,17 @@ Modules
 
 This section provides an overview of the modules included in the `xIndices` package and their functionalities.
 
+xIndices Modules
+=================
+
 .. toctree::
-   :maxdepth: 3
-   :caption: API Documentation
+   :maxdepth: 2
+   :caption: Module Contents
 
    xIndices/indices
    xIndices/preprocess_data
    xIndices/utils
-   xIndices/main
+
 
 Overview
 --------
