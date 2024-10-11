@@ -19,7 +19,7 @@ release = '1.2.1'
 
 extensions = [
     "sphinx.ext.napoleon",
-    # "sphinx.ext.autodoc",
+    "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     # "sphinx_design",
     # "nbsphinx",
