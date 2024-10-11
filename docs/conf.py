@@ -25,10 +25,10 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.extlinks',
               'matplotlib.sphinxext.plot_directive',]
 
-html_sidebars = {'**': ['sidebar_toc.html',
-                        'relations.html',
-                        'sourcelink.html',
-                        'searchbox.html']}
+# html_sidebars = {'**': ['sidebar_toc.html',
+#                         'relations.html',
+#                         'sourcelink.html',
+#                         'searchbox.html']}
 
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
 templates_path = ['_templates']
