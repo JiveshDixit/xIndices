@@ -29,27 +29,3 @@ The following sections provide details on the functions and classes available in
 
 .. automodule:: xIndices
    :members:
-
-Indices Module
---------------
-
-.. automodule:: xIndices.indices
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Preprocess Data Module
-----------------------
-
-.. automodule:: xIndices.preprocess_data
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Utils Module
-------------
-
-.. automodule:: xIndices.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
