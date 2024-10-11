@@ -29,7 +29,6 @@ The following sections provide details on the functions and classes available in
 
 .. automodule:: xIndices
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Indices Module
