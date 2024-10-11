@@ -49,7 +49,7 @@ Detailed Documentation
 ----------------------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: API Documentation
 
 Below are detailed descriptions of the modules and their functions. Click on each to view the complete documentation:
