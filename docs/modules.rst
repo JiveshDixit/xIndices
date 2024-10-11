@@ -4,7 +4,7 @@ Modules
 This section provides an overview of the modules included in the `xIndices` package and their functionalities.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: API Documentation
 
    xIndices/indices
@@ -49,7 +49,7 @@ Detailed Documentation
 ----------------------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
    :caption: API Documentation
 
 Below are detailed descriptions of the modules and their functions. Click on each to view the complete documentation:
