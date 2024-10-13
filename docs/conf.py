@@ -25,7 +25,7 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.intersphinx',
               'sphinx.ext.extlinks',
               'matplotlib.sphinxext.plot_directive',
-              'sphinx_material',]
+              'sphinx_design',]
 
 # html_sidebars = {'**': ['sidebar_toc.html',
 #                         'relations.html',
