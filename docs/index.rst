@@ -62,17 +62,8 @@ xIndices is a Python package developed for computing climte variability modes us
 
       **API Documentation**
 
-      Explore the available functions and classes.
+      Explore the available submodules and functions.
 
-#    .. grid-item-card::
-#      :octicon:`people;10em`
-#      :link: content/contributing
-#      :link-type: doc
-#      :text-align: center
-
-#      **Contributing Guide**
-
-#      Join the community and contribute to the project.
 
 
 .. _xarray: https://docs.xarray.dev/en/stable/index.html
