@@ -7,4 +7,4 @@ dependencies:
   - xesmf
   - pip
   - pip:
-    - -e ../.[complete,docs]
+    - -e ../
