@@ -1,14 +1,12 @@
 
-xIndices Modules
-=================
+xIndices
+========
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Module Contents
+   :maxdepth: 4
 
-   indices
-   preprocess\_data
-   utils
+   xIndices
+
 
 Overview
 --------
