@@ -4,11 +4,17 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.11"
+
 python:
   install:
-    - conda:
-        environment: environment.yaml
-        
+    - method: conda
+      path: .
+      requirements: environment.yaml  # Install with conda using your environment.yaml
+  jobs:
+    post_install:
+      - python -m pip install --upgrade --no-cache-dir pip setuptools
+      - python -m pip install --upgrade --no-cache-dir sphinx readthedocs-sphinx-ext
+
 sphinx:
   configuration: docs/conf.py
 
