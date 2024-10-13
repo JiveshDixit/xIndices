@@ -1,0 +1,7 @@
+name: xindices-env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - xesmf
+  - numpy  # Add other dependencies if needed
