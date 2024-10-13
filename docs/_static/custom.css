@@ -25,6 +25,21 @@ html[data-theme="dark"] {
     background: #ea7317;
 }
 
+.only-dark {
+  display: none;
+}
+
+.only-light {
+  display: block;
+}
+
+body.dark-theme .only-dark {
+  display: block;
+}
+
+body.dark-theme .only-light {
+  display: none;
+}
 
 /* INFO admonition */
 div.admonition.info {
