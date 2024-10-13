@@ -7,9 +7,9 @@ build:
 
 python:
   install:
-    - method: conda
-      path: .
-      requirements: environment.yaml  # Install with conda using your environment.yaml
+    method: conda
+    requirements: environment.yaml
+
   jobs:
     post_install:
       - python -m pip install --upgrade --no-cache-dir pip setuptools
