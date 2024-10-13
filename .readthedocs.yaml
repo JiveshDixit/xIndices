@@ -13,5 +13,11 @@ python:
     - conda:
         environment: environment.yaml
 
+  jobs:
+    post_install:
+      - python -m pip install --upgrade --no-cache-dir pip setuptools
+      - python -m pip install --upgrade --no-cache-dir sphinx readthedocs-sphinx-ext
+
 sphinx:
   configuration: docs/conf.py
+
