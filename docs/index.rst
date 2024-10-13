@@ -34,7 +34,7 @@ xIndices is a Python package developed for computing climte variability modes us
 .. grid:: 2
 
     .. grid-item-card:: 
-      :octicon:`repo;10em`
+      :octicon:`gear;10em`
       :link: installation
       :link-type: doc
       :text-align: center
@@ -44,7 +44,7 @@ xIndices is a Python package developed for computing climte variability modes us
       
 
     .. grid-item-card::
-      :octicon:`gear;10em`
+      :octicon:`repo;10em`
       :link: usage
       :link-type: doc
       :text-align: center
