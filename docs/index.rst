@@ -7,4 +7,5 @@ Welcome to xIndices's documentation!
 
    installation
    usage
+   api
    modules
