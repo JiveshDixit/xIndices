@@ -14,7 +14,7 @@ Overview
 `xIndices` is organized into the following modules:
 
 1. **xIndices.indices**: 
-   This module contains functions for calculating indices such as SST trends, ENSO patterns, MJO phase diagrams, and NAO indices.
+   This module contains functions for calculating indices such as SST trend and warming pattern, ENSO pattern & Index, PDO pattern & Index, and NAO pattern & Index.
 
    - `global_sst_trend_and_enso`: Calculate global SST trend, warming patterns, ENSO patterns, and indices.
    - `compute_nao`: Compute the NAO index and pattern using EOF analysis using varimax rotation.
@@ -47,40 +47,71 @@ Detailed Documentation
 xIndices package
 ================
 
+.. currentmodule:: xIndices
+
+.. automodule:: xIndices
+   :no-index:
+
+
 Submodules
 ----------
 
 xIndices.indices module
 -----------------------
 
+.. currentmodule:: xIndices.indices
+
 .. automodule:: xIndices.indices
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   :no-index:
+
+.. autofunction:: calculate_global_mean_sst
+
+.. autofunction:: global_sst_trend_and_enso
+
+.. autofunction:: compute_regional_eof_modes
+
+.. autofunction:: compute_pdo
+
+.. autofunction:: compute_amo
+
+.. autofunction:: compute_nao
 
 
 xIndices.preprocess\_data module
 --------------------------------
 
+.. currentmodule:: xIndices.preprocess_data
+
 .. automodule:: xIndices.preprocess_data
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   :no-index:
+
+.. autofunction:: load_data
+
+.. autofunction:: regridding
+
+.. autofunction:: write_netcdf
+
+.. autofunction:: adjust_longitude
+
+.. autofunction:: rename_dims_to_standard
+
 
 xIndices.utils module
 ---------------------
 
+.. currentmodule:: xIndices.utils
+
 .. automodule:: xIndices.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   :no-index:
 
-Module contents
----------------
+.. autofunction:: calculate_anomaly
 
-.. automodule:: xIndices
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. autofunction:: compute_weights
+
+.. autofunction:: line_plot
+
+.. autofunction:: contour_plot
+
+.. autofunction:: compute_rotated_eofs
 
 
