@@ -9,3 +9,7 @@ Welcome to xIndices's documentation!
    usage
    api
    modules
+
+
+.. toctree::
+   :maxdepth: 1
