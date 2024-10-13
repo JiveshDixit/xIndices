@@ -44,6 +44,34 @@ source_suffix = '.rst'
 # The master toctree document.
 master_doc = 'index'
 
+html_theme = "pydata_sphinx_theme"
+
+html_context = {
+    # ...
+    "default_mode": "dark"
+}
+
+# Theme options are theme-specific and customize the look and feel of a theme
+# further.  For a list of options available for each theme, see the
+# documentation.
+#
+html_theme_options = {
+    "show_nav_level": 1,
+    "icon_links": [
+        {
+            # Label for this link
+            "name": "GitHub",
+            # URL where the link will redirect
+            "url": "https://github.com/JiveshDixit/xIndices",  # required
+            # Icon class (if "type": "fontawesome"), or path to local image (if "type": "local")
+            "icon": "fa-brands fa-square-github",
+            # The type of image to be used (see below for details)
+            "type": "fontawesome",
+        }
+    ],
+}
+
+
 html_logo = "./logo.jpeg"
 
 # -- Options for HTML output -------------------------------------------------
