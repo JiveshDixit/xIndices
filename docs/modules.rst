@@ -2,10 +2,22 @@
 xIndices
 ========
 
+This section provides an overview of the modules included in the `xIndices` package and their functionalities.
+
 .. toctree::
    :maxdepth: 4
+   :caption: API Documentation
 
-   xIndices
+xIndices Modules
+=================
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Module Contents
+
+   xIndices/indices
+   xIndices/preprocess_data
+   xIndices/utils
 
 
 Overview
