@@ -7,4 +7,5 @@ dependencies:
   - xesmf
   - pip
   - pip:
+    - pydata-sphinx-theme
     - -e .
