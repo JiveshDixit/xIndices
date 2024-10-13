@@ -7,7 +7,7 @@ xIndices Modules
    :caption: Module Contents
 
    indices
-   preprocess_data
+   preprocess\_data
    utils
 
 Overview
@@ -47,7 +47,7 @@ Detailed Documentation
 Below are detailed descriptions of the modules and their functions.
 
 
-.. currentmodule:: xIndices.preprocess_data
+.. currentmodule:: xIndices.preprocess\_data
 
 .. automodule:: xIndices.preprocess_data
    :no-index:
