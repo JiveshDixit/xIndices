@@ -14,9 +14,9 @@ xIndices Modules
    :maxdepth: 2
    :caption: Module Contents
 
-   xIndices/indices
-   xIndices/preprocess_data
-   xIndices/utils
+   indices
+   preprocess_data
+   utils
 
 Overview
 --------
@@ -52,7 +52,7 @@ Overview
 Detailed Documentation
 ----------------------
 
-Below are detailed descriptions of the modules and their functions. Click on each to view the complete documentation:
+Below are detailed descriptions of the modules and their functions.
 
 .. currentmodule:: xIndices.indices
 
@@ -101,4 +101,5 @@ Below are detailed descriptions of the modules and their functions. Click on eac
 .. autofunction:: contour_plot
 
 .. autofunction:: compute_rotated_eofs
+
 
