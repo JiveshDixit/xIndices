@@ -1,14 +1,14 @@
 .. image:: ./logo.jpeg
   :class: only-dark
   :align: center
-  :width: 1000
+  :width: 250
   :alt: logo of xIndices
 
 
 .. image:: ./logo.jpeg
   :class: only-light
   :align: center
-  :width: 1000
+  :width: 250
   :alt: logo of xIndices
 
 
