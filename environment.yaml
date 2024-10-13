@@ -4,7 +4,8 @@ channels:
   - jiveshdixit
 dependencies:
   - python=3.11
-  - xesmf
+  - rpy2
+  - pandoc
   - pip
   - pip:
     - -e .
