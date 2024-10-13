@@ -15,7 +15,16 @@ Requirements
 Installing xIndices
 -------------------
 
-You can install `xIndices` directly from PyPI using `pip`. Run the following command in your terminal:
+You can install `xIndices` directly using `conda` and `pip` both. However, we recommend conda_ driven installation for xIndices_. Run the following command in your terminal:
+
+Using conda (recommended):
+
+.. code-block:: bash
+
+   conda create -n x_indices -c conda forge python=3.11             ##(OPTIONAL)
+   conda activate x_indices
+   conda install -c jiveshdixit -c conda-forge xindices
+
 
 Using pip:
 
@@ -25,13 +34,7 @@ Using pip:
    conda activate x_indices
    pip install xIndices
 
-Using conda:
 
-.. code-block:: bash
-
-   conda create -n x_indices -c conda forge python=3.11             ##(OPTIONAL)
-   conda activate x_indices
-   conda install -c jiveshdixit -c conda-forge xindices
 
 This will download and install the latest version of `xIndices` and its dependencies.
 
