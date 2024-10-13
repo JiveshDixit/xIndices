@@ -1,6 +1,10 @@
 name: xindices-env
 channels:
   - conda-forge
+  - jiveshdixit
 dependencies:
   - python=3.11
   - xesmf
+  - pip
+  - pip:
+    - -e ../.[complete,docs]
