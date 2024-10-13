@@ -94,6 +94,43 @@ Below are detailed descriptions of the modules and their functions.
 .. autofunction:: compute_nao
 
 
+xIndices package
+================
 
+Submodules
+----------
+
+xIndices.indices module
+-----------------------
+
+.. automodule:: xIndices.indices
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+xIndices.preprocess\_data module
+--------------------------------
+
+.. automodule:: xIndices.preprocess_data
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+xIndices.utils module
+---------------------
+
+.. automodule:: xIndices.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: xIndices
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 
