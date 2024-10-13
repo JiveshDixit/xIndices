@@ -73,7 +73,7 @@ html_theme_options = {
 }
 
 
-html_logo = "./logo.jpeg"
+html_logo = "./xIndices.png"
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
