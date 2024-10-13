@@ -1,11 +1,11 @@
-.. image:: ./logo.png
+.. image:: ./xIndices.png
   :class: only-dark
   :align: center
   :width: 250
   :alt: logo of xIndices
 
 
-.. image:: ./logo.png
+.. image:: ./xIndices.png
   :class: only-light
   :align: center
   :width: 250
