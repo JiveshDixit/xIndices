@@ -25,20 +25,14 @@ html[data-theme="dark"] {
     background: #ea7317;
 }
 
-.only-dark {
-  display: none;
+/* Default for light mode */
+.logo {
+  filter: none;  /* Default appearance */
 }
 
-.only-light {
-  display: block;
-}
-
-body.dark-theme .only-dark {
-  display: block;
-}
-
-body.dark-theme .only-light {
-  display: none;
+/* For dark mode, adjust colors as needed */
+body.dark-theme .logo {
+  filter: invert(100%);
 }
 
 /* INFO admonition */
