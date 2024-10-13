@@ -54,23 +54,6 @@ Detailed Documentation
 
 Below are detailed descriptions of the modules and their functions.
 
-.. currentmodule:: xIndices.indices
-
-.. automodule:: xIndices.indices
-   :no-index:
-
-.. autofunction:: calculate_global_mean_sst
-
-.. autofunction:: global_sst_trend_and_enso
-
-.. autofunction:: compute_regional_eof_modes
-
-.. autofunction:: compute_pdo
-
-.. autofunction:: compute_amo
-
-.. autofunction:: compute_nao
-
 
 .. currentmodule:: xIndices.preprocess_data
 
@@ -101,5 +84,26 @@ Below are detailed descriptions of the modules and their functions.
 .. autofunction:: contour_plot
 
 .. autofunction:: compute_rotated_eofs
+
+
+.. currentmodule:: xIndices.indices
+
+.. automodule:: xIndices.indices
+   :no-index:
+
+.. autofunction:: calculate_global_mean_sst
+
+.. autofunction:: global_sst_trend_and_enso
+
+.. autofunction:: compute_regional_eof_modes
+
+.. autofunction:: compute_pdo
+
+.. autofunction:: compute_amo
+
+.. autofunction:: compute_nao
+
+
+
 
 
