@@ -15,7 +15,7 @@ python:
     - method: pip
       path: .
     - conda:  # Add this block for conda installations
-        - environment: environment.yml
+        - environment: environment.yaml
   jobs:
   post_install:
     
