@@ -6,6 +6,8 @@ dependencies:
   - python=3.11
   - xesmf
   - pip
+  - sphinx
+  - sphinx-design
   - pip:
     - pydata-sphinx-theme
     - -e .
