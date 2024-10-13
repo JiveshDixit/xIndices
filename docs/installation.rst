@@ -66,3 +66,7 @@ If you wish to remove `xIndices` from your environment, you can do so using:
 .. code-block:: bash
 
    pip uninstall xIndices
+
+
+.. _conda: https://anaconda.org/
+.. _xIndices: https://anaconda.org/jiveshdixit/xindices
