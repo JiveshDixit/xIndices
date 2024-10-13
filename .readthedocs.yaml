@@ -5,22 +5,18 @@ build:
   tools:
     python: "3.11"
 
-# install:
-#   - method: pip
-#     path: .
-
 python:
   install:
     - requirements: requirements.txt
     - method: pip
       path: .
-    - conda:  # Add this block for conda installations
-        - environment: environment.yaml
+    - conda:
+        environment: environment.yaml
+
   jobs:
-  post_install:
-    
-    - python -m pip install --upgrade --no-cache-dir pip setuptools
-    - python -m pip install --upgrade --no-cache-dir sphinx readthedocs-sphinx-ext
+    post_install:
+      - python -m pip install --upgrade --no-cache-dir pip setuptools
+      - python -m pip install --upgrade --no-cache-dir sphinx readthedocs-sphinx-ext
 
 sphinx:
   configuration: docs/conf.py
