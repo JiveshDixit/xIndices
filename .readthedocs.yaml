@@ -4,13 +4,11 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.11"
-
 python:
   install:
-    - requirements: requirements.txt
-    - method: pip
-      path: .
-
+    - conda:
+        environment: environment.yaml
+        
 sphinx:
   configuration: docs/conf.py
 
