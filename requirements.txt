@@ -1,3 +1,4 @@
 sphinx==7.2.6
+sphinx-design
 sphinx_rtd_theme
 xIndices
