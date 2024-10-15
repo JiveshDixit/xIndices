@@ -4,6 +4,8 @@
 
 [![Downloads](https://img.shields.io/pepy/dt/xIndices)](https://img.shields.io/pepy/dt/xIndices)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13932672.svg)](https://doi.org/10.5281/zenodo.13932672)
+
 [![Documentation Status](https://readthedocs.org/projects/xindices/badge/?version=latest)](https://xindices.readthedocs.io/en/latest/?badge=latest)
 # Overview
 
