@@ -1,12 +1,7 @@
 **xIndices: A xarray based module for computing SST trends, SST variability modes and other atmospheric variability modes**
 
-[![PyPi Shield](https://img.shields.io/pypi/v/xIndices)](https://pypi.org/project/xIndices/)
+[![PyPi Shield](https://img.shields.io/pypi/v/xIndices)](https://pypi.org/project/xIndices/) [![Downloads](https://img.shields.io/pepy/dt/xIndices)](https://img.shields.io/pepy/dt/xIndices) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13932672.svg)](https://doi.org/10.5281/zenodo.13932672) [![Documentation Status](https://readthedocs.org/projects/xindices/badge/?version=latest)](https://xindices.readthedocs.io/en/latest/?badge=latest)
 
-[![Downloads](https://img.shields.io/pepy/dt/xIndices)](https://img.shields.io/pepy/dt/xIndices)
-
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13932672.svg)](https://doi.org/10.5281/zenodo.13932672)
-
-[![Documentation Status](https://readthedocs.org/projects/xindices/badge/?version=latest)](https://xindices.readthedocs.io/en/latest/?badge=latest)
 # Overview
 
 **xIndices** is a xarray based Python library for calculating climate variability indices and patterns.
