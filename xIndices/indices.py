@@ -3,11 +3,22 @@
 import numpy as np
 from .utils import calculate_anomaly, compute_weights, compute_rotated_eofs
 import xarray as xr
-from .preprocess_data import load_data, rename_dims_to_standard, adjust_longitude
+from .preprocess_data import load_data, rename_dims_to_standard, adjust_longitude, regridding, adjust_latitude
 
 
 
 def calculate_global_mean_sst(data, lat_name='lat', lon_name='lon'):
+    """
+    Calculate the global mean sea surface temperature (SST) anomaly.
+
+    Parameters:
+    data (xarray.DataArray): Input data array containing SST values.
+    lat_name (str, optional): Name of the latitude coordinate in the data array. Default is 'lat'.
+    lon_name (str, optional): Name of the longitude coordinate in the data array. Default is 'lon'.
+
+    Returns:
+    xarray.DataArray: The global mean SST anomaly.
+    """
     return calculate_anomaly(data).weighted(compute_weights(data)).mean(dim=[lat_name, lon_name])
 
 
@@ -67,13 +78,19 @@ def global_sst_trend_and_enso(data=None, path=None, var=None, clim_start=None, c
         ]
     
 
-    if path and var:
+    if data is not None:
+        data = adjust_latitude(adjust_longitude(rename_dims_to_standard(data.sel(time=slice(start_time, end_time))), to_range=to_range))
+    elif path and var:
         data = adjust_longitude(
             rename_dims_to_standard(
-                load_data(path, var, start_time=start_time, end_time=end_time)
+                load_data(
+                    path, var, start_time=start_time, end_time=end_time
+                )
             ),
             to_range=to_range
         )
+    else:
+        print("No valid data !!!")
     
 
     data_anom = calculate_anomaly(data, clim_start=clim_start, clim_end=clim_end)
@@ -105,7 +122,7 @@ def global_sst_trend_and_enso(data=None, path=None, var=None, clim_start=None, c
 
 def compute_regional_eof_modes(data=None, path=None, var=None, clim_start=None, clim_end=None, desired=None, 
     start_time=None, end_time=None, lat_s=90, lat_e=-90, lon_s=0, lon_e=360, 
-    to_range='0_360', n_modes=1, remove_trend=False, rotated=False, 
+    to_range='0_360', n_modes=1, remove_trend=False, rotated=None, 
     use_coslat=True, standardize=False, normalize_pattern=True, normalize_index=False):
     """
     Calculate regional EOF (Empirical Orthogonal Functions) modes from gridded SST data.
@@ -147,7 +164,7 @@ def compute_regional_eof_modes(data=None, path=None, var=None, clim_start=None, 
         Number of EOF modes to compute. Default is 1.
     remove_trend : bool, optional
         Whether to remove the global trend before calculating EOFs. Default is False.
-    rotated : bool, optional
+    rotated : str, optional
         Whether to apply Varimax or Promax rotation to the EOFs. Default is False.
     use_coslat : bool, optional
         Whether to use cosine latitude weighting. Default is True.
@@ -166,24 +183,38 @@ def compute_regional_eof_modes(data=None, path=None, var=None, clim_start=None, 
     if desired is None:
         desired = ['regional_patterns', 'regional_timeseries', 'variance_fractions_regional']
     
-
-    if path and var:
+    if data is not None:
+        if start_time!=None and end_time!=None:
+            data = adjust_latitude(adjust_longitude(rename_dims_to_standard(data.sel(time=slice(start_time, end_time))), to_range=to_range))
+        else:
+            data = adjust_latitude(adjust_longitude(rename_dims_to_standard(data), to_range=to_range))
+    elif path and var:
         data = adjust_longitude(
             rename_dims_to_standard(
                 load_data(
-                    path, var, start_time=start_time, end_time=end_time, 
-                    lat_s=lat_s, lat_e=lat_e, lon_s=lon_s, lon_e=lon_e
+                    path, var, start_time=start_time, end_time=end_time
                 )
             ),
             to_range=to_range
         )
+    else:
+        print("No valid data !!!")
+
+
+
     
 
-    data_anom = calculate_anomaly(data, clim_start=clim_start, clim_end=clim_end)
+    data_anom_1 = calculate_anomaly(data, clim_start=clim_start, clim_end=clim_end)
+    data_anom = data_anom_1.sel(lat=slice(lat_s, lat_e), lon=slice(lon_s, lon_e))
     if remove_trend:
-        global_mean_sst = calculate_global_mean_sst(data, lat_name='lat', lon_name='lon')
+        global_mean_sst = calculate_global_mean_sst(data_anom_1, lat_name='lat', lon_name='lon')
         data_anom -= global_mean_sst
 
+
+    if rotated is not None:
+        n_modes = 10 ### High number of modes to redistribute variance while rotating
+    else:
+        n_modes = n_modes
 
     solver = compute_rotated_eofs(
         data_anom, rotated=rotated, n_modes=n_modes, 
@@ -260,16 +291,22 @@ def compute_pdo(data=None, path=None, var=None, clim_start=None, clim_end=None, 
     n_modes = 1 if remove_trend else 2
     
 
-    if path and var:
+    if data is not None:
+        if start_time!=None and end_time!=None:
+            data = adjust_latitude(adjust_longitude(rename_dims_to_standard(data.sel(time=slice(start_time, end_time))), to_range=to_range))
+        else:
+            data = adjust_latitude(adjust_longitude(rename_dims_to_standard(data), to_range=to_range))
+    elif path and var:
         data = adjust_longitude(
             rename_dims_to_standard(
                 load_data(
-                    path, var, start_time=start_time, end_time=end_time, 
-                    lat_s=lat_s, lat_e=lat_e, lon_s=lon_s, lon_e=lon_e
+                    path, var, start_time=start_time, end_time=end_time
                 )
             ),
             to_range=to_range
         )
+    else:
+        print("No valid data !!!")
 
 
     data_anomaly = calculate_anomaly(data)
@@ -277,7 +314,7 @@ def compute_pdo(data=None, path=None, var=None, clim_start=None, clim_end=None, 
     
 
     if remove_trend:
-        data_pdo_anomaly = data_pdo - calculate_global_mean_sst(data, lat_name='lat', lon_name='lon')
+        data_pdo_anomaly = data_pdo - calculate_global_mean_sst(data_anomaly, lat_name='lat', lon_name='lon')
     else:
         data_pdo_anomaly = calculate_anomaly(data_pdo, clim_start=clim_start, clim_end=clim_end)
     
@@ -350,13 +387,22 @@ def compute_amo(data=None, path=None, var=None, clim_start=None, clim_end=None, 
         desired = ['amo_pattern', 'amo_index']
 
 
-    if path is not None and var is not None:
+    if data is not None:
+        if start_time!=None and end_time!=None:
+            data = adjust_latitude(adjust_longitude(rename_dims_to_standard(data.sel(time=slice(start_time, end_time))), to_range=to_range))
+        else:
+            data = adjust_latitude(adjust_longitude(rename_dims_to_standard(data), to_range=to_range))
+    elif path and var:
         data = adjust_longitude(
             rename_dims_to_standard(
-                load_data(path, var, start_time=start_time, end_time=end_time)
+                load_data(
+                    path, var, start_time=start_time, end_time=end_time
+                )
             ),
             to_range=to_range
         )
+    else:
+        print("No valid data !!!")
 
 
     north_atlantic_sst = data.sel(lat=slice(lat_s, lat_e), lon=slice(lon_s, lon_e))
@@ -393,8 +439,8 @@ def compute_amo(data=None, path=None, var=None, clim_start=None, clim_end=None, 
 
 
 
-def compute_nao(data=None, path=None, var=None, clim_start=None, clim_end=None, desired=None, 
-    lat_s=None, lat_e=None, use_coslat=None, standardize=None, to_range=None, n_modes=10, nao_mode=None,
+def compute_nao(data=None, path=None, var=None, clim_start=None, clim_end=None, desired=None, \
+    lat_s=None, lat_e=None, use_coslat=None, standardize=None, to_range=None, n_modes=10, nao_mode=None, \
     start_time=None, end_time=None, rotated='Varimax'):
     '''
     This function calculates the NAO index, NAO pattern, and variance fraction.
@@ -454,10 +500,22 @@ def compute_nao(data=None, path=None, var=None, clim_start=None, clim_end=None, 
     nao_mode = nao_mode if nao_mode is not None else 1
 
 
-    if path is not None and var is not None:
-        data = adjust_longitude(rename_dims_to_standard(
-            load_data(path, var, start_time=start_time, end_time=end_time, lat_s=lat_s, lat_e=lat_e)
-        ), to_range=to_range)
+    if data is not None:
+        if start_time!=None and end_time!=None:
+            data = adjust_latitude(adjust_longitude(rename_dims_to_standard(data.sel(time=slice(start_time, end_time))), to_range=to_range))
+        else:
+            data = adjust_latitude(adjust_longitude(rename_dims_to_standard(data), to_range=to_range))
+    elif path and var:
+        data = adjust_longitude(
+            rename_dims_to_standard(
+                load_data(
+                    path, var, start_time=start_time, end_time=end_time
+                )
+            ),
+            to_range=to_range
+        )
+    else:
+        print("No valid data !!!")
 
 
     if data is None:
@@ -488,4 +546,3 @@ def compute_nao(data=None, path=None, var=None, clim_start=None, clim_end=None, 
 
     return_desired = [result_dict[key] for key in desired if key in result_dict]
     return return_desired[0] if len(return_desired) == 1 else return_desired
-

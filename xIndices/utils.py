@@ -1,5 +1,4 @@
 # anomaly.py
-
 import xarray as xr
 import numpy as np
 import xeofs
@@ -11,13 +10,39 @@ from cartopy.util import add_cyclic_point#(data, coord=None, axis=-1)
 
 
 def compute_weights(data, lat_dim=None):
+    """
+    Compute weights based on the cosine of latitude values.
+
+    Parameters:
+    data (xarray.DataArray or xarray.Dataset): The input data containing latitude values.
+    lat_dim (str, optional): The name of the latitude dimension in the data. Defaults to 'lat'.
+
+    Returns:
+    xarray.DataArray: Weights computed as the cosine of the latitude values in radians.
+    """
     if lat_dim==None:
         lat_dim='lat'
-    """Compute cosine weights based on latitude."""
     return np.cos(np.deg2rad(data[f'{lat_dim}']))
 
 def calculate_anomaly(data, clim_start=None, climatology_dim='time', clim_end=None, freq='month'):   
-    """Calculate anomaly based on climatology."""
+
+    """
+    Calculate anomalies by subtracting the climatology from the data.
+
+    Parameters:
+    data (xarray.DataArray or xarray.Dataset): The input data from which to calculate anomalies.
+    clim_start (str, optional): The start year for the climatology period in 'YYYY' format. If None, the entire period is used.
+    climatology_dim (str, optional): The dimension over which to calculate the climatology. Default is 'time'.
+    clim_end (str, optional): The end year for the climatology period in 'YYYY' format. If None, the entire period is used.
+    freq (str, optional): The frequency for grouping the data. Must be either 'month' or 'dayofyear'. Default is 'month'.
+
+    Returns:
+    xarray.DataArray or xarray.Dataset: The anomalies calculated by subtracting the climatology from the data.
+
+    Raises:
+    ValueError: If the frequency is not 'month' or 'dayofyear'.
+    """
+
     if clim_start is None:
         if freq == 'month':
             return data.groupby(f'{climatology_dim}.{freq}') - data.groupby(f'{climatology_dim}.{freq}').mean((f'{climatology_dim}'))
@@ -30,41 +55,27 @@ def calculate_anomaly(data, clim_start=None, climatology_dim='time', clim_end=No
         return data.groupby(f'{climatology_dim}.{freq}') - climatology
 
 
-# def compute_eofs(data, lat_dim='lat'):
-
-#     ''' This functions computes EOF using eofs module '''
-
-#     coslat = np.cos(np.deg2rad(data.coords[lat_dim].values))
-#     weights = np.sqrt(coslat)
-
-#     if weights.ndim == 1 and len(weights) == data.sizes[lat_dim]:
-#         # Expand weights for broadcasting
-#         weights = weights[..., np.newaxis]  # Add a new axis for broadcasting in EOF calculation
-#     else:
-#         raise ValueError("Weights dimensions do not align with the data anomaly.")
-
-#     try:
-#         if lat_dim not in data.dims:
-#             solver = Eof(data)
-#         else:
-#             solver = Eof(data, weights=weights)
-#         return solver
-        
-#     except Exception as e:
-#         print(f"Error creating EOF solver: {e}")
-#         return None  # Return None on failure to avoid confusion with the exception message
 
 def line_plot(data, figsize=None, dpi=None, variance_fraction=None, color=None, label=None):
+    """
+    Plots a line graph for the given data.
 
-    ''' This function plots the calculated indices for the priliminary check 
-        if the user wants.
-        data: 1D data to be plot
-        figsize: size of the canvas. Tuple e.g. (10, 3) default
-        dpi : dots per inches-square. Integer 300 default
-        variance_fraction: Variance fraction calculated from the given functions 
-        such as in calculate_pdo etc.
-        color: color for the line desired, black if None
-        label: label for the line to be plotted, e.g. PDO, ENSO etc.'''
+    Parameters:
+    data (xarray.DataArray): The data to be plotted. Must be 1-dimensional and contain a 'time' dimension.
+    figsize (tuple, optional): The size of the figure in inches (width, height). Defaults to None.
+    dpi (int, optional): The resolution of the figure in dots per inch. Defaults to None.
+    variance_fraction (float, optional): A variance fraction value to be displayed on the plot. Defaults to None.
+    color (str, optional): The color of the line plot. Defaults to None.
+    label (str, optional): The label for the plot. Defaults to None.
+
+    Returns:
+    None
+
+    Raises:
+    Exception: If an error occurs during plotting, it prints an error message.
+    """
+
+
     try:
         if data.ndim == 1 and 'time' in data.dims:
             plt.figure(figsize=figsize, dpi=dpi)
@@ -88,20 +99,23 @@ def line_plot(data, figsize=None, dpi=None, variance_fraction=None, color=None, 
 
 
 def contour_plot(data, projection=None, figsize=None, dpi=None, cmap=None, extend=None, levels=None, central_lon=None, central_lat=None, ax_global=False):
+    """
+    Generate a contour plot for the given data.
+    Parameters:
+    data (xarray.DataArray): The data to be plotted. Must be a 2D array with 'lat' and 'lon' dimensions.
+    projection (cartopy.crs.Projection, optional): The map projection to use. Defaults to PlateCarree with central_longitude.
+    figsize (tuple, optional): The size of the figure in inches (width, height). Defaults to None.
+    dpi (int, optional): The resolution of the figure in dots per inch. Defaults to None.
+    cmap (str or matplotlib.colors.Colormap, optional): The colormap to use for the plot. Defaults to None.
+    extend (str, optional): Whether to extend the colorbar at the ends. Options are 'neither', 'both', 'min', 'max'. Defaults to None.
+    levels (list, optional): The contour levels to use. Defaults to 10 levels between the min and max of the data.
+    central_lon (float, optional): The central longitude for the projection. Defaults to 0.
+    central_lat (float, optional): The central latitude for the projection. Defaults to 0.
+    ax_global (bool, optional): Whether to set the axis to global. Defaults to False.
+    Returns:
+    None
+    """
 
-    ''' This function plots the calculated variability patterbs for the 
-        priliminary check if the user wants.
-        data (xr_DataArray): 2D data to be plot
-        projection (projection object ccrs.Projection_type()): cartopy projection for contour plot
-        cmap (str): colormap
-        extend (str): extend colorbar, takes arguments, max, min, both 
-        figsize (tuple; e.g. default (12, 6)): size of the canvas.
-        dpi (int default 450): dots per inches-square
-        central_lat: center of latitude for projection
-        central_lon: centre of longitude for projection
-        levels (list sorted as min to max.)= contour levels
-
-        '''
 
     try:
         if data.ndim==2 and 'lat' in data.dims and 'lon' in data.dims:
@@ -201,3 +215,145 @@ def compute_rotated_eofs(data, rotated=None, n_modes=None, standardize=None, use
     except Exception as e:
         print(f"Error during EOF calculation: {e}")
         return None
+
+
+
+def lanczos_filter_xarray(data, dT=1, Cf=None, Cf2=None, M=100, filter_type='low', time_dim=None):
+    """
+    Apply a Lanczos filter to an xarray DataArray using FFT-based filtering.
+    
+    Parameters:
+    - data (xarray.DataArray): Input data to filter
+    - dT (float): Sampling interval (default: 1)
+    - Cf (float): Lower cut-off frequency in 1/dT units (default: Nyquist/2 for low/high-pass)
+    - Cf2 (float): Upper cut-off frequency (only used for bandpass)
+    - M (int): Number of coefficients (default: 100)
+    - filter_type (str): Type of filter - 'low', 'high', or 'band'
+    - time_dim (str): The name of the time dimension (default: auto-detect)
+    
+    Returns:
+    - xarray.DataArray: Filtered data
+    """
+    # Auto-detect time dimension if not provided
+    if time_dim is None:
+        time_dim = [dim for dim in data.dims if "time" in dim.lower()]
+        if not time_dim:
+            raise ValueError("Time dimension not found. Please specify 'time_dim'.")
+        time_dim = time_dim[0]
+    
+
+    Nf = 1 / (2 * dT)
+    if Cf is None:
+        Cf = Nf / 2
+    
+    Cf /= Nf
+    
+    if filter_type == 'band':
+        if Cf2 is None:
+            raise ValueError("For bandpass, Cf2 must be specified.")
+        Cf2 /= Nf
+
+
+    n = np.arange(0, M + 1)
+    sigma = np.sinc(n / M)
+    hk_low = Cf * np.sinc(2 * Cf * n) * sigma
+    hk_high = -Cf * np.sinc(2 * Cf * n) * sigma
+    hk_high[0] += 1
+    
+    if filter_type == 'low':
+        coef = hk_low
+    elif filter_type == 'high':
+        coef = hk_high
+    elif filter_type == 'band':
+        hk_band = (Cf2 * np.sinc(2 * Cf2 * n) - Cf * np.sinc(2 * Cf * n)) * sigma
+        coef = hk_band
+    else:
+        raise ValueError("Invalid filter type. Choose 'low', 'high', or 'band'")
+    
+
+    Ff = np.linspace(0, 1, data.sizes[time_dim])
+    window = np.zeros_like(Ff)
+    for i, f in enumerate(Ff):
+        window[i] = coef[0] + 2 * np.sum(coef[1:] * np.cos(np.pi * np.arange(1, M + 1) * f))
+    
+
+    def apply_fft_filtering(arr):
+        Cx = np.fft.rfft(arr)
+        CxH = Cx * window[:len(Cx)]
+        return np.fft.irfft(CxH, n=len(arr))
+    
+    filtered = xr.apply_ufunc(
+        apply_fft_filtering,
+        data,
+        input_core_dims=[[time_dim]],
+        output_core_dims=[[time_dim]],
+        vectorize=True,
+        dask="parallelized",
+        output_dtypes=[data.dtype]
+    )
+    
+    return filtered
+
+
+
+def standardize_data(data, data_std_dev=None, dim=None):
+    """
+    Standardizes the input data along a specified dimension.
+
+    Parameters:
+    data (xarray.DataArray or numpy.ndarray): The input data to be standardized.
+    data_std_dev (xarray.DataArray, numpy.ndarray, or None, optional): The standard deviation to use for standardization. 
+        If None, the standard deviation of the input data along the specified dimension will be used. Default is None.
+    dim (str or None, optional): The dimension along which to standardize the data. 
+        If None, the default dimension 'time' will be used. Default is None.
+
+    Returns:
+    xarray.DataArray or numpy.ndarray: The standardized data.
+    """
+
+
+    if dim==None:
+        dim='time'
+
+    if data_std_dev==None:
+        return data/data.std(dim=dim)
+    else:
+        return data/data_std_dev
+
+
+def project_data_onto_eofs(data, eof_modes):
+    """
+    Projects the input data onto the provided Empirical Orthogonal Functions (EOF) modes.
+
+    Parameters:
+    data (xarray.DataArray): The input data to be projected.
+    eof_modes (xarray.DataArray): The EOF modes onto which the data will be projected.
+
+    Returns:
+    xarray.DataArray: The projected data.
+    """
+    return xr.dot(data, eof_modes)
+
+def stack_vars(list_vars, stack_name=None, drop_dims=[]):
+    """
+    Stack a list of xarray DataArray or Dataset objects along a new dimension.
+
+    Parameters:
+    -----------
+    list_vars : list of xarray.DataArray or xarray.Dataset
+        List of variables to be stacked.
+    stack_name : str, optional
+        Name of the new dimension along which to stack the variables. Default is 'variable'.
+    drop_dims : list of str, optional
+        List of dimension names to be dropped from each variable before stacking. Default is an empty list.
+
+    Returns:
+    --------
+    xarray.DataArray or xarray.Dataset
+        The stacked xarray object with the new dimension.
+    """
+    if stack_name==None:
+        stack_name='variable'
+    if len(drop_dims)>0:
+        list_vars=[var.drop_vars(drop_dims, errors='ignore') for var in list_vars]
+    return xr.concat(list_vars, dim='variable', coords='minimal', compat='override')
