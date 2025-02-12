@@ -11,8 +11,8 @@ long_description = (this_dir / "README.md").read_text()
 
 setup(
     name='xIndices',
-    version='1.2.1',
-    description='A xarray based module for computing SST trends and SST variability modes and other atmospheric variability modes',
+    version='1.3.6',
+    description='A xarray based module for computing SST trends, SST variability modes and other atmospheric variability modes',
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Jivesh Dixit',
@@ -30,7 +30,7 @@ setup(
         'xesmf',
         'matplotlib',
         'cartopy',
-        'xeofs >2.2.3'
+        'xeofs>2.2.3'
     ],
-    python_requires='>=3.10, <3.13'
+    python_requires='>=3.11',
 )
