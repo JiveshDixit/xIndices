@@ -1,7 +1,7 @@
 # __init__.py
 
 
-__version__ = "1.3.6"
+__version__ = "1.3.7"
 
 from .utils import calculate_anomaly, compute_weights, line_plot, compute_rotated_eofs, contour_plot, lanczos_filter_xarray,\
 		standardize_data, project_data_onto_eofs, stack_vars
