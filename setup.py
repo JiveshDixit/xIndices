@@ -41,8 +41,7 @@ setup(
         'xarray',
         'numpy>=2.0',
         'dask',
-        'xesmf',
-        'esmpy',
+        'xesmf>= 0.7',
         'matplotlib',
         'cartopy',
         'xeofs>2.2.3'

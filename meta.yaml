@@ -19,18 +19,18 @@ build:
 
 requirements:
   host:
-    - python >=3.11,<3.12
+    - python >=3.11
     - setuptools         
     - numpy >=2.0  
-    - xeofs >2.2.3       
+    - xeofs >2.2.3
+    - xesmf >=0.7   
 
   run:
-    - python >=3.11,<3.12
+    - python >=3.11
     - xarray
     - numpy >=2.0
     - dask
-    - xesmf
-    - esmpy
+    - xesmf >=0.7
     - matplotlib
     - cartopy
     - xeofs >2.2.3
@@ -38,9 +38,12 @@ requirements:
 run_constrained:
  - numpy >=2.0
 
-# test:
-#   imports:
-#     - xIndices
+test:
+  imports:
+    - xIndices
+  # requires:
+  # - esmpy
+  # - pip 
 
 about:
   home: https://github.com/JiveshDixit/xIndices
