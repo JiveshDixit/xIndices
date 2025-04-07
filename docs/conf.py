@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.abspath('..'))
 project = 'xIndices'
 copyright = '2024, Jivesh Dixit'
 author = 'Jivesh Dixit'
-release = '1.2.1'
+release = '1.3.7'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
