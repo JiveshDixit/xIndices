@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - jiveshdixit
 dependencies:
-  - python=3.11
+  - python
   - xesmf
   - pip
   - sphinx
