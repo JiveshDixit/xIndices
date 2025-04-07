@@ -93,6 +93,8 @@ xIndices.preprocess\_data module
 
 .. autofunction:: adjust_longitude
 
+.. autofunction:: adjust_latitude
+
 .. autofunction:: rename_dims_to_standard
 
 
@@ -113,5 +115,7 @@ xIndices.utils module
 .. autofunction:: contour_plot
 
 .. autofunction:: compute_rotated_eofs
+
+.. autofunction:: lanczos_filter_xarray
 
 
