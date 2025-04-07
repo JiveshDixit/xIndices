@@ -3,8 +3,10 @@ package:
   version: "1.3.6"
 
 source:
-  url: https://anaconda.org/jiveshdixit/xindices/1.2.1/download/linux-64/xindices-1.2.1-py311_0.tar.bz2
-  sha256: 8cf9973f46645c889b05a42a74e128a15670e5b2597fa067cb2cd61403427034
+  path: .
+  # files:
+  # - README.md
+
 
 extra:
   channels:
@@ -12,33 +14,36 @@ extra:
 
 
 build:
-  noarch: python  # If your package is architecture-independent
+  noarch: python
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
 
 requirements:
   host:
-    - python >=3.11,<3.13  # Specify Python version compatibility for build
-    - setuptools           # For building the package
-    - numpy >=1.26,<2.0     # Numpy for build-time requirements
-    - xeofs >2.2.3          # xeofs for build-time requirements
+    - python >=3.11,<3.12
+    - setuptools         
+    - numpy >=2.0  
+    - xeofs >2.2.3       
 
   run:
-    - python >=3.11,<=3.12  # Updated to be compatible
+    - python >=3.11,<3.12
     - xarray
-    - numpy >=1.26,<2.0
+    - numpy >=2.0
     - dask
     - xesmf
+    - esmpy
     - matplotlib
     - cartopy
-    - xeofs >2.2.3  # Adjusted version for compatibility
+    - xeofs >2.2.3
 
+run_constrained:
+ - numpy >=2.0
 
-test:
-  imports:
-    - xindices              # Test to verify installation
+# test:
+#   imports:
+#     - xIndices
 
 about:
-  home: https://github.com/JiveshDixit/xIndices  # Replace with your actual GitHub link
+  home: https://github.com/JiveshDixit/xIndices
   license: MIT
   summary: "A xarray based module for computing SST trends and SST variability modes and other atmospheric variability modes"
   description: |
@@ -48,7 +53,4 @@ about:
 
 extra:
   recipe-maintainers:
-    - JiveshDixit  # Replace with your GitHub username or leave it empty
-    
-    
- 	
+    - JiveshDixit

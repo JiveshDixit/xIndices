@@ -22,6 +22,9 @@ in the data). This comes in handy when one wants to play around EOF patterns in 
 global SST (One can calculate other modes using generaic EOF tool of this package), PDO, AMO, NAO etc. We intend to
 add more variability modes.
 
+* **Low-pass, high-pass and band-pass** We have recently added Lanczos filter as it is very useful in climate
+variability analysis to filter-out the signal from noise.
+
 
 # Install
 

@@ -1,0 +1,4 @@
+# conda_build_config.yaml
+
+numpy:
+  - "2.0"
