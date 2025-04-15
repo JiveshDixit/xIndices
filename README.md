@@ -1,8 +1,25 @@
 **xIndices: A xarray based module for computing SST trends, SST variability modes and other atmospheric variability modes**
 
-[![PyPi Shield](https://img.shields.io/pypi/v/xIndices)](https://pypi.org/project/xIndices/)
+[![PyPi Shield](https://img.shields.io/pypi/v/xIndices)](https://pypi.org/project/xIndices/) [![PyPi Downloads](https://img.shields.io/pepy/dt/xIndices?label=PyPi%20Downloads)](https://pepy.tech/project/xIndices)
 
-[![Downloads](https://img.shields.io/pepy/dt/xIndices)](https://img.shields.io/pepy/dt/xIndices)
+# Install
+
+Install the xIndices library using pip or conda. If you want to **updrade to v1.37, please install fresh**.
+
+# using Conda
+
+```bash
+conda create -n x_indices python
+conda activate x_indices (If creating the x_indices environment)
+conda install -c jiveshdixit -c conda-forge xindices
+```
+# using pip
+
+```bash
+conda create -n x_indices python xesmf (MANDATORY)
+conda activate x_indices
+pip install xIndices
+```
 
 # Overview
 
@@ -25,26 +42,6 @@ add more variability modes.
 * **Low-pass, high-pass and band-pass** We have recently added Lanczos filter as it is very useful in climate
 variability analysis to filter-out the signal from noise.
 
-
-# Install
-
-
-
-
-
-Install the xIndices library using pip or conda.
-
-```bash
-conda create -n x_indices python=3.11 (OPTIONAL)
-conda activate x_indices (If creating the x_indices environment)
-conda install -c jiveshdixit -c conda-forge xindices
-```
-
-```bash
-conda create -n x_indices python=3.11 xesmf (MANDATORY)
-conda activate x_indices
-pip install xIndices
-```
 
 # Update
 
