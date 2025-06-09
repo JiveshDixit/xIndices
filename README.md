@@ -1,6 +1,6 @@
 **xIndices: A xarray based module for computing SST trends, SST variability modes and other atmospheric variability modes**
 
-[![PyPi Shield](https://img.shields.io/pypi/v/xIndices)](https://pypi.org/project/xIndices/) [![PyPi Downloads](https://img.shields.io/pepy/dt/xIndices?label=PyPi%20Downloads)](https://pepy.tech/project/xIndices)
+[![PyPi Shield](https://img.shields.io/pypi/v/xIndices)](https://pypi.org/project/xIndices/) [![PyPi Downloads](https://img.shields.io/pepy/dt/xIndices?label=PyPi%20Downloads)](https://pepy.tech/project/xIndices) ![Conda Downloads](https://anaconda.org/jiveshdixit/xIndices/badges/downloads.svg)
 
 # Install
 
